@@ -183,14 +183,15 @@ export default {
 				
 				} else if (pingzi.x <= 0) {
 					 pingzi.x = 1;
-					 pingzi.x1 = 1 + PZW;
-					 pingzi.x2 = 1 + PZW;
+					 pingzi.x1 = 1 + PZH;
+					 pingzi.x2 = 1 + PZH;
 					 pingzi.x3 = 1;
-				} else if (pingzi.x >= W-PZW) {
-					pingzi.x = W-81;
-					pingzi.x1 = W-81 + PZW;
-					pingzi.x2 = W-81 + PZW;
-					pingzi.x3 = W-81;
+				} else if (pingzi.x >= W - PZW) {
+					let width = PZW + 1;
+					pingzi.x = W - width;
+					pingzi.x1 = W - width + PZW;
+					pingzi.x2 = W - width + PZW;
+					pingzi.x3 = W - width;
 				}
 				canvasInfo.offsetPos = canvasPos
 			}

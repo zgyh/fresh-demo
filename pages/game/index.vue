@@ -1,8 +1,6 @@
 <template>
 	<view class="content">
-		<view class="bg">
-			<image src='../../static/background_c.png'></image>
-		</view>
+		<view class="bg"><image src="../../static/background_c.png"></image></view>
 		<canvas
 			type="2d"
 			:style="{ width: W + 'px', height: H + 'px' }"
@@ -17,7 +15,7 @@
 </template>
 
 <script>
-import { randomX, queryPtInPolygon, getDistance } from "../../util.js";
+import { rand, queryPtInPolygon, getDistance } from "../../util.js";
 const INTERVAL_TIME = 600;
 let XE_ID = 0;
 
@@ -28,7 +26,7 @@ const dpr = wx.getSystemInfoSync().pixelRatio;
 const PZW = 136;
 const PZH = 116;
 const x = W / 2 - PZW / 2;
-const y = H - PZH - 20;
+const y = H - PZH - 34;
 const pingzi = {
 	x: x,
 	y: y,
@@ -97,72 +95,86 @@ export default {
 			.exec(res => {
 				console.log(res);
 				const canvas = res[0].node;
-				
 
 				canvas.width = res[0].width * dpr;
 				canvas.height = res[0].height * dpr;
 
 				this.ctx = canvas.getContext("2d");
 				this.ctx.scale(dpr, dpr);
-				let pic = canvas.createImage();
-				pic.src = "./../../static/icon_component_hong.png"; //可以是本地，也可以是网络图片
+				const chengfenImagesUrl = [
+					"./../../static/icon_component_hong.png",
+					"./../../static/icon_component_jiao.png",
+					"./../../static/icon_component_shen.png",
+					"./../../static/icon_component_yan.png",
+					"./../../static/icon_harmful_factor.a.png",
+					"./../../static/icon_harmful_factor.b.png",
+					"./../../static/icon_harmful_factor.c.png"
+				];
+				let images = [];
+				chengfenImagesUrl.forEach(e => {
+					//可以是本地，也可以是网络图片
+					let pic = canvas.createImage();
+					pic.src = e;
+					images.push(pic);
+					pic.onload = () => {
+						//不要用官方示例的图片路径，包括网上在这之前所有的文档/示例里是地址链接的都不要看了，要用image对象！
+						// this.ctx.beginPath();
+						//this.ctx.drawImage(pic, 120, H - 80, 40, 40);
+						// this.ctx.closePath();
+						// this.ctx.drawImage(pic, 180, 600, 40, 40);
+					};
+				});
+				
+				// let pic = canvas.createImage();
+				// pic.src = "./../../static/icon_component_hong.png";
 				let pic1 = canvas.createImage();
 				pic1.src = "./../../static/product.img_fresh.png";
-				pic.onload = () => {
-					//不要用官方示例的图片路径，包括网上在这之前所有的文档/示例里是地址链接的都不要看了，要用image对象！
-					// this.ctx.beginPath();
-					//this.ctx.drawImage(pic, 120, H - 80, 40, 40);
-					// this.ctx.closePath();
-					// this.ctx.drawImage(pic, 180, 600, 40, 40);
-				};
-				let stars = [];
-				let star = null;
+				
+				let categorizes = [];
+				let categorize = null;
 
 				setInterval(() => {
-					star = that.createStar(randomX(40, W - PZW), 0, 40, 40, pic);
-					stars.push(star);
+					categorize = that.createCategorize(rand(40, W - 75), 0, 40, 40, images[rand(0,6)]);
+					categorizes.push(categorize);
 				}, INTERVAL_TIME);
-				let ii = 0
-				function starLoop() {
+				let ii = 0;
+				function startLoop() {
 					that.ctx.clearRect(0, 0, W, H);
-					canvas.requestAnimationFrame(starLoop);
-					stars.forEach((s, i) => {
+					canvas.requestAnimationFrame(startLoop);
+					categorizes.forEach((s, i) => {
 						s.update();
 						s.draw();
-						
+
 						if (s.y >= H) {
 							//大于屏幕高度的就从数组里去掉
-							stars.splice(i, 1);
+							categorizes.splice(i, 1);
 						}
 					});
 					// that.ctx.setFontSize(20);
 					that.pzList.forEach((e, i) => {
-						
-						if(!e.showText) {
-							let list = that.pzList.filter((s) => !s.showText)
+						if (!e.showText) {
+							let list = that.pzList.filter(s => !s.showText);
 							list.forEach((l, k) => {
-								that.ctx.fillStyle = '#381E15';
-								that.ctx.fillText(`${l.id}碰撞了。。。`, pingzi.x + PZW / 2, (pingzi.y - 5) - 17*k);
-								that.ctx.textAlign = 'center';
-								setTimeout(function () {
+								that.ctx.font = `${14}px Verdana`;
+								that.ctx.fillStyle = "#381E15";
+								that.ctx.fillText(`${l.id}碰撞了。。。`, pingzi.x + PZW / 2, pingzi.y - 5 - 17 * k);
+								that.ctx.textAlign = "center";
+								setTimeout(function() {
 									that.pzList[i].showText = true;
 								}, 3000);
 							});
-							
-							
 						}
-						
-					})
-					
+					});
+
 					that.ctx.drawImage(pic1, pingzi.x, pingzi.y, pingzi.width, pingzi.height);
 				}
-				starLoop();
+				startLoop();
 			});
 	},
 	methods: {
 		touchstart(e) {
 			const canvasPos = getCanvasPosition(e);
-			if(ifInPingZi(canvasPos)) {
+			if (ifInPingZi(canvasPos)) {
 				canvasInfo.status = StatusDefine.DRAG_START;
 				canvasInfo.lastEvtPos = canvasPos;
 				canvasInfo.offsetPos = canvasPos;
@@ -170,85 +182,87 @@ export default {
 		},
 		touchmove(e) {
 			const canvasPos = getCanvasPosition(e);
-			if(canvasInfo.status === StatusDefine.DRAG_START && getDistance(canvasPos, canvasInfo.lastEvtPos) > 5){
+			if (
+				canvasInfo.status === StatusDefine.DRAG_START &&
+				getDistance(canvasPos, canvasInfo.lastEvtPos) > 5
+			) {
 				canvasInfo.status = StatusDefine.DRAGING;
 				canvasInfo.offsetPos = canvasPos;
 			} else if (canvasInfo.status === StatusDefine.DRAGING) {
-				if(pingzi.x > 0 && pingzi.x < W-PZW) {
-					let x = canvasPos.x - canvasInfo.offsetPos.x
+				if (pingzi.x > 0 && pingzi.x < W - PZW) {
+					let x = canvasPos.x - canvasInfo.offsetPos.x;
 					pingzi.x += x;
 					pingzi.x1 += x + PZW;
 					pingzi.x2 += x + PZW;
 					pingzi.x3 += x;
-				
 				} else if (pingzi.x <= 0) {
-					 pingzi.x = 1;
-					 pingzi.x1 = 1 + PZW;
-					 pingzi.x2 = 1 + PZW;
-					 pingzi.x3 = 1;
-				} else if (pingzi.x >= W-PZW) {
-					pingzi.x = W-81;
-					pingzi.x1 = W-81 + PZW;
-					pingzi.x2 = W-81 + PZW;
-					pingzi.x3 = W-81;
+					pingzi.x = 1;
+					pingzi.x1 = 1 + PZW;
+					pingzi.x2 = 1 + PZW;
+					pingzi.x3 = 1;
+				} else if (pingzi.x >= W - PZW) {
+					let width = PZW + 1;
+					pingzi.x = W - width;
+					pingzi.x1 = W - width + PZW;
+					pingzi.x2 = W - width + PZW;
+					pingzi.x3 = W - width;
 				}
-				canvasInfo.offsetPos = canvasPos
+				canvasInfo.offsetPos = canvasPos;
 			}
 		},
 		touchend(e) {
 			// console.log(e);
-			if(canvasInfo.status === StatusDefine.DRAGING) {
+			if (canvasInfo.status === StatusDefine.DRAGING) {
 				canvasInfo.status = StatusDefine.IDLE;
 			}
 		},
 		touchcancel(e) {
 			// console.log(e);
-			if(canvasInfo.status === StatusDefine.DRAGING) {
+			if (canvasInfo.status === StatusDefine.DRAGING) {
 				canvasInfo.status = StatusDefine.IDLE;
 			}
 		},
 
-		createStar(x, y, width, height, image) {
+		createCategorize(x, y, width, height, image) {
 			const that = this;
-			function Star(x, y, width, height, image) {
+			function Categorize(x, y, width, height, image) {
 				this.id = XE_ID++;
 				this.x = x;
 				this.y = y;
-				this.width = width;
-				this.height = height;
+				this.width = rand(40, 75);
+				this.height = this.width;
 				this.image = image;
-				this.pz = false;
 			}
 
-			Star.prototype.update = function() {
+			Categorize.prototype.update = function() {
 				this.y += 1;
 				let xfanweinei = false;
-				if(pingzi.x - this.x === 0) {
+				if (pingzi.x - this.x === 0) {
 					xfanweinei = true;
 				}
-				let right = (pingzi.x - this.x) > 0 //right
-				if(right){
-					xfanweinei = pingzi.x - this.x <= 40
+				let right = pingzi.x - this.x > 0; //right
+				if (right) {
+					xfanweinei = pingzi.x - this.x <= this.width;
 				}
-				
-				if(!right) {
-					xfanweinei = pingzi.x - this.x >= -PZW
+
+				if (!right) {
+					xfanweinei = pingzi.x - this.x >= -PZW;
 				}
-				
-				if(xfanweinei && this.y === pingzi.y) {
+
+				if (xfanweinei && this.y === pingzi.y) {
 					console.log(`${this.id}:碰撞了。。。`);
 					that.pzList.push(this);
 					this.y = 10000;
 				}
 			};
 
-			Star.prototype.draw = function() {
+			Categorize.prototype.draw = function() {
 				// that.ctx.beginPath();
 				// that.ctx.fillText(`碰撞了。。。`, pingzi.x, pingzi.y)
 				that.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
 			};
 
-			return new Star(x, y, width, height, image);
+			return new Categorize(x, y, width, height, image);
 		}
 	}
 };
@@ -258,10 +272,10 @@ export default {
 .content {
 	position: relative;
 	height: 100vh;
-	.bg{
+	.bg {
 		height: 100vh;
 		width: 100%;
-		image{
+		image {
 			height: 100vh;
 			width: 100%;
 		}
@@ -272,6 +286,4 @@ export default {
 		z-index: 1000;
 	}
 }
-
-
 </style>

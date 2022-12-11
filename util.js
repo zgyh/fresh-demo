@@ -1,5 +1,5 @@
-export const randomX = function(min, max) {
-	return Math.floor(Math.random() * max + min);
+export const rand = (m, n) => {
+   return Math.ceil(Math.random() * (n-m+1) + m-1)
 }
 
 
