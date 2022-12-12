@@ -1,277 +1,34 @@
 <template>
 	<view class="content">
 		<view class="bg">
-			<image src='../../static/background_c.png'></image>
+			<image src='https://gitee.com/YanHuZheng/asset/raw/master/gif/guangsu.gif'></image>
 		</view>
-		<canvas
-			type="2d"
-			:style="{ width: W + 'px', height: H + 'px' }"
-			canvas-id="firstCanvas"
-			id="firstCanvas"
-			@touchstart="touchstart"
-			@touchmove="touchmove"
-			@touchend="touchend"
-			@touchcancel="touchcancel"
-		></canvas>
+
 	</view>
 </template>
 
 <script>
-import { randomX, queryPtInPolygon, getDistance } from "../../util.js";
-const INTERVAL_TIME = 600;
-let XE_ID = 0;
 
-const W = uni.getSystemInfoSync().windowWidth;
-const H = uni.getSystemInfoSync().windowHeight;
-const dpr = wx.getSystemInfoSync().pixelRatio;
 
-const PZW = 136;
-const PZH = 116;
-const x = W / 2 - PZW / 2;
-const y = H - PZH - 20;
-const pingzi = {
-	x: x,
-	y: y,
-	x1: x + PZW,
-	y1: y,
-	x2: x + PZW,
-	y2: y + PZW,
-	x3: x,
-	y3: y + PZW,
-	width: PZW,
-	height: PZH
-};
-
-const StatusDefine = {
-	IDLE: 0,
-	DRAG_START: 1,
-	DRAGING: 2
-};
-
-const canvasInfo = {
-	status: StatusDefine.IDLE,
-	dragTarget: {
-		x: pingzi.x,
-		y: pingzi.y
-	},
-	lastEvtPos: null,
-	offsetPos: null
-};
-
-const getCanvasPosition = e => {
-	return {
-		x: e.touches[0].x,
-		y: e.touches[0].y
-	};
-};
-
-const ifInPingZi = pos => {
-	let polygon = [
-		{ x: pingzi.x, y: pingzi.y },
-		{ x: pingzi.x1, y: pingzi.y1 },
-		{ x: pingzi.x2, y: pingzi.y2 },
-		{ x: pingzi.x3, y: pingzi.y3 }
-	];
-	console.log(queryPtInPolygon(pos, polygon));
-	if (queryPtInPolygon(pos, polygon)) {
-		return true;
-	}
-
-	return false;
-};
 export default {
 	data() {
 		return {
-			W,
-			H,
-			ctx: null,
-			pzList: []
+
 		};
 	},
 	onLoad() {
-		const that = this;
-		const query = uni.createSelectorQuery();
-		query
-			.select("#firstCanvas")
-			.fields({ node: true, size: true })
-			.exec(res => {
-				console.log(res);
-				const canvas = res[0].node;
-				
-
-				canvas.width = res[0].width * dpr;
-				canvas.height = res[0].height * dpr;
-
-				this.ctx = canvas.getContext("2d");
-				this.ctx.scale(dpr, dpr);
-				let pic = canvas.createImage();
-				pic.src = "./../../static/icon_component_hong.png"; //可以是本地，也可以是网络图片
-				let pic1 = canvas.createImage();
-				pic1.src = "./../../static/product.img_fresh.png";
-				pic.onload = () => {
-					//不要用官方示例的图片路径，包括网上在这之前所有的文档/示例里是地址链接的都不要看了，要用image对象！
-					// this.ctx.beginPath();
-					//this.ctx.drawImage(pic, 120, H - 80, 40, 40);
-					// this.ctx.closePath();
-					// this.ctx.drawImage(pic, 180, 600, 40, 40);
-				};
-				let stars = [];
-				let star = null;
-
-				setInterval(() => {
-					star = that.createStar(randomX(40, W - PZW), 0, 40, 40, pic);
-					stars.push(star);
-				}, INTERVAL_TIME);
-				let ii = 0
-				function starLoop() {
-					that.ctx.clearRect(0, 0, W, H);
-					canvas.requestAnimationFrame(starLoop);
-					stars.forEach((s, i) => {
-						s.update();
-						s.draw();
-						
-						if (s.y >= H) {
-							//大于屏幕高度的就从数组里去掉
-							stars.splice(i, 1);
-						}
-					});
-					// that.ctx.setFontSize(20);
-					that.pzList.forEach((e, i) => {
-						
-						if(!e.showText) {
-							let list = that.pzList.filter((s) => !s.showText)
-							list.forEach((l, k) => {
-								that.ctx.fillStyle = '#381E15';
-								that.ctx.fillText(`${l.id}碰撞了。。。`, pingzi.x + PZW / 2, (pingzi.y - 5) - 17*k);
-								that.ctx.textAlign = 'center';
-								setTimeout(function () {
-									that.pzList[i].showText = true;
-								}, 3000);
-							});
-							
-							
-						}
-						
-					})
-					
-					that.ctx.drawImage(pic1, pingzi.x, pingzi.y, pingzi.width, pingzi.height);
-				}
-				starLoop();
-			});
+		
 	},
 	methods: {
-		touchstart(e) {
-			const canvasPos = getCanvasPosition(e);
-			if(ifInPingZi(canvasPos)) {
-				canvasInfo.status = StatusDefine.DRAG_START;
-				canvasInfo.lastEvtPos = canvasPos;
-				canvasInfo.offsetPos = canvasPos;
-			}
-		},
-		touchmove(e) {
-			const canvasPos = getCanvasPosition(e);
-			if(canvasInfo.status === StatusDefine.DRAG_START && getDistance(canvasPos, canvasInfo.lastEvtPos) > 5){
-				canvasInfo.status = StatusDefine.DRAGING;
-				canvasInfo.offsetPos = canvasPos;
-			} else if (canvasInfo.status === StatusDefine.DRAGING) {
-				if(pingzi.x > 0 && pingzi.x < W-PZW) {
-					let x = canvasPos.x - canvasInfo.offsetPos.x
-					pingzi.x += x;
-					pingzi.x1 += x + PZW;
-					pingzi.x2 += x + PZW;
-					pingzi.x3 += x;
-				
-				} else if (pingzi.x <= 0) {
-					 pingzi.x = 1;
-					 pingzi.x1 = 1 + PZH;
-					 pingzi.x2 = 1 + PZH;
-					 pingzi.x3 = 1;
-				} else if (pingzi.x >= W - PZW) {
-					let width = PZW + 1;
-					pingzi.x = W - width;
-					pingzi.x1 = W - width + PZW;
-					pingzi.x2 = W - width + PZW;
-					pingzi.x3 = W - width;
-				}
-				canvasInfo.offsetPos = canvasPos
-			}
-		},
-		touchend(e) {
-			// console.log(e);
-			if(canvasInfo.status === StatusDefine.DRAGING) {
-				canvasInfo.status = StatusDefine.IDLE;
-			}
-		},
-		touchcancel(e) {
-			// console.log(e);
-			if(canvasInfo.status === StatusDefine.DRAGING) {
-				canvasInfo.status = StatusDefine.IDLE;
-			}
-		},
-
-		createStar(x, y, width, height, image) {
-			const that = this;
-			function Star(x, y, width, height, image) {
-				this.id = XE_ID++;
-				this.x = x;
-				this.y = y;
-				this.width = width;
-				this.height = height;
-				this.image = image;
-				this.pz = false;
-			}
-
-			Star.prototype.update = function() {
-				this.y += 1;
-				let xfanweinei = false;
-				if(pingzi.x - this.x === 0) {
-					xfanweinei = true;
-				}
-				let right = (pingzi.x - this.x) > 0 //right
-				if(right){
-					xfanweinei = pingzi.x - this.x <= 40
-				}
-				
-				if(!right) {
-					xfanweinei = pingzi.x - this.x >= -PZW
-				}
-				
-				if(xfanweinei && this.y === pingzi.y) {
-					console.log(`${this.id}:碰撞了。。。`);
-					that.pzList.push(this);
-					this.y = 10000;
-				}
-			};
-
-			Star.prototype.draw = function() {
-				// that.ctx.beginPath();
-				// that.ctx.fillText(`碰撞了。。。`, pingzi.x, pingzi.y)
-				that.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-			};
-
-			return new Star(x, y, width, height, image);
-		}
+		
 	}
 };
 </script>
 
 <style lang="less">
 .content {
-	position: relative;
+	width: 100vw;
 	height: 100vh;
-	.bg{
-		height: 100vh;
-		width: 100%;
-		image{
-			height: 100vh;
-			width: 100%;
-		}
-	}
-	#firstCanvas {
-		position: fixed;
-		top: 0;
-		z-index: 1000;
-	}
 }
 
 

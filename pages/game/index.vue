@@ -16,7 +16,7 @@
 
 <script>
 import { rand, queryPtInPolygon, getDistance } from "../../util.js";
-const INTERVAL_TIME = 600;
+const INTERVAL_TIME = 900;
 let XE_ID = 0;
 
 const W = uni.getSystemInfoSync().windowWidth;
@@ -152,22 +152,36 @@ export default {
 					});
 					// that.ctx.setFontSize(20);
 					that.pzList.forEach((e, i) => {
-						if (!e.showText) {
-							let list = that.pzList.filter(s => !s.showText);
-							list.forEach((l, k) => {
-								that.ctx.font = `${14}px Verdana`;
-								that.ctx.fillStyle = "#381E15";
-								that.ctx.fillText(`${l.id}碰撞了。。。`, pingzi.x + PZW / 2, pingzi.y - 5 - 17 * k);
-								that.ctx.textAlign = "center";
-								setTimeout(function() {
-									that.pzList[i].showText = true;
-								}, 3000);
-							});
-						}
+						// that.ctx.globalAlpha = e.textAlpha - 0.5;
+						e.textAlpha -= 0.0012
+						that.ctx.font = `${13}px Verdana`;
+						that.ctx.fillStyle = `rgb(56, 30, 21, ${e.textAlpha})`;
+						that.ctx.fillText(`+红茶立体抗衰老成分`, pingzi.x + PZW / 2, pingzi.y - 5 - 20 * i);
+						that.ctx.textAlign = "center";
+					
+						// if (!e.showText) {
+						// 	let list = that.pzList.filter(s => !s.showText);
+						// 	list.forEach((l, k) => {
+						// 		that.ctx.font = `${13}px Verdana`;
+						// 		that.ctx.fillStyle = "#381E15";
+						// 		that.ctx.fillText(`+红茶立体抗衰老成分`, pingzi.x + PZW / 2, pingzi.y - 5 - 17 * k);
+						// 		that.ctx.textAlign = "center";
+						// 		setTimeout(function() {
+						// 			that.pzList[i].showText = true;
+						// 		}, 3000);
+						// 	});
+						// }
 					});
+					
 
 					that.ctx.drawImage(pic1, pingzi.x, pingzi.y, pingzi.width, pingzi.height);
 				}
+				setTimeout(function calle() {
+					if(that.pzList.length >= 1) {
+						that.pzList.splice(0, that.pzList.length > 6 ? 2 : 1);
+					}
+					setTimeout(calle, 1200);
+				}, 1200)
 				startLoop();
 			});
 	},
@@ -232,6 +246,7 @@ export default {
 				this.width = rand(40, 75);
 				this.height = this.width;
 				this.image = image;
+				this.textAlpha = 1;
 			}
 
 			Categorize.prototype.update = function() {
@@ -250,15 +265,13 @@ export default {
 				}
 
 				if (xfanweinei && this.y === pingzi.y) {
-					console.log(`${this.id}:碰撞了。。。`);
+					// console.log(`${this.id}:碰撞了。。。`);
 					that.pzList.push(this);
 					this.y = 10000;
 				}
 			};
 
 			Categorize.prototype.draw = function() {
-				// that.ctx.beginPath();
-				// that.ctx.fillText(`碰撞了。。。`, pingzi.x, pingzi.y)
 				that.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
 			};
 
