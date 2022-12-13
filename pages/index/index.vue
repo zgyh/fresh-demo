@@ -16,7 +16,8 @@ export default {
 
 		};
 	},
-	onLoad() {
+	onLoad(query) {
+		console.log(query);
 		
 	},
 	methods: {
