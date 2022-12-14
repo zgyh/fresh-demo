@@ -1,6 +1,6 @@
 <template>
 	<view class="content">
-		<view class="bg"><image src="../../static/background_c.png"></image></view>
+		<view class="bg"><image :src="bgImg"></image></view>
 		<canvas
 			type="2d"
 			:style="{ width: W + 'px', height: H + 'px' }"
@@ -15,6 +15,7 @@
 </template>
 
 <script>
+// import {  }
 import { rand, queryPtInPolygon, getDistance } from "../../util.js";
 const INTERVAL_TIME = 900;
 let XE_ID = 0;
@@ -83,7 +84,8 @@ export default {
 			W,
 			H,
 			ctx: null,
-			pzList: []
+			pzList: [],
+			bgImg: 'https://wanzhuan-activity.oss-cn-hangzhou.aliyuncs.com/assets/zh-CN/background_c.png'
 		};
 	},
 	onLoad() {
@@ -152,36 +154,34 @@ export default {
 					});
 					// that.ctx.setFontSize(20);
 					that.pzList.forEach((e, i) => {
-						// that.ctx.globalAlpha = e.textAlpha - 0.5;
-						e.textAlpha -= 0.0012
-						that.ctx.font = `${13}px Verdana`;
-						that.ctx.fillStyle = `rgb(56, 30, 21, ${e.textAlpha})`;
+						setTimeout(function calle() {
+							if(e.timeout && e.textAlpha <= 0) {
+								that.pzList.splice(0, that.pzList.length > 4 ? 2 : 1);
+								clearTimeout(e.timeout);
+								return;
+							}
+							e.textAlpha -= 0.002;
+							if(!e['timeout']) {
+								e['timeout'] = setTimeout(calle, 200);
+							}
+							
+						},0);
+						// e.textAlpha -= 0.0016;
+						that.ctx.font = `${13}px`;
+						that.ctx.fillStyle = `rgba(56, 30, 21, ${e.textAlpha})`;
 						that.ctx.fillText(`+红茶立体抗衰老成分`, pingzi.x + PZW / 2, pingzi.y - 5 - 20 * i);
 						that.ctx.textAlign = "center";
-					
-						// if (!e.showText) {
-						// 	let list = that.pzList.filter(s => !s.showText);
-						// 	list.forEach((l, k) => {
-						// 		that.ctx.font = `${13}px Verdana`;
-						// 		that.ctx.fillStyle = "#381E15";
-						// 		that.ctx.fillText(`+红茶立体抗衰老成分`, pingzi.x + PZW / 2, pingzi.y - 5 - 17 * k);
-						// 		that.ctx.textAlign = "center";
-						// 		setTimeout(function() {
-						// 			that.pzList[i].showText = true;
-						// 		}, 3000);
-						// 	});
-						// }
 					});
 					
 
 					that.ctx.drawImage(pic1, pingzi.x, pingzi.y, pingzi.width, pingzi.height);
 				}
-				setTimeout(function calle() {
-					if(that.pzList.length >= 1) {
-						that.pzList.splice(0, that.pzList.length > 6 ? 2 : 1);
-					}
-					setTimeout(calle, 1200);
-				}, 1200)
+				// setTimeout(function calle() {
+				// 	if(that.pzList.length >= 1) {
+				// 		that.pzList.splice(0, that.pzList.length > 4 ? 2 : 1);
+				// 	}
+				// 	setTimeout(calle, 1500);
+				// }, 3000)
 				startLoop();
 			});
 	},
