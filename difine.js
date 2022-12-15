@@ -1,13 +1,15 @@
-export const environment = {
+const environment = {
 	'test': {
 		apiUrl: '',
-		resourcesUrl: 'https://wanzhuan-activity.oss-cn-hangzhou.aliyuncs.com/assets/zh-CN/background.png'
+		resourcesUrl: 'https://wanzhuan-activity.oss-cn-hangzhou.aliyuncs.com/assets'
 	},
 	'production': {
 		apiUrl: '',
-		resourcesUrl: 'https://wanzhuan-activity.oss-cn-hangzhou.aliyuncs.com/assets/zh-CN/background.png'
+		resourcesUrl: 'https://wanzhuan-activity.oss-cn-hangzhou.aliyuncs.com/assets'
 	}
 }
+
+export const env = environment['test'];
 
 export const language = {
 	'zh-CN': 'zh-CN',

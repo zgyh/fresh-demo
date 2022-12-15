@@ -3,6 +3,12 @@ import App from './App'
 // #ifndef VUE3
 import Vue from 'vue'
 Vue.config.productionTip = false
+Vue.prototype.$globalData = {
+	navBarHeight: 0,
+	menuRight: 0,
+	menuTop: 0,
+	menuHeight: 0
+}
 App.mpType = 'app'
 const app = new Vue({
     ...App
