@@ -1,31 +1,58 @@
 <template>
 	<view class="content">
+		<view v-if="showMask" class="mask-again"> 
+			<button class="again-btn" @click="onAgain()">再试一次</button>
+		</view>
+		<view class="mask-pass" v-if="passMask">
+			<view class="pass-content">
+				<image class="guangsu" mode="widthFix" :src="`${env.resourcesUrl}/gif/guangsu.gif`"></image>
+				<image class="product" mode="widthFix" :src="`${env.resourcesUrl}/zh-CN/product.img_fresh_b.png`"></image>
+				<image class="lizi" mode="widthFix" :src="`${env.resourcesUrl}/gif/lizi.gif`"></image>
+			</view>
+		</view>
 		<view class="bg"><image :src="bgImg"></image></view>
-		<canvas
-			type="2d"
-			:style="{ width: W + 'px', height: H + 'px' }"
-			canvas-id="firstCanvas"
-			id="firstCanvas"
-			@touchstart="touchstart"
-			@touchmove="touchmove"
-			@touchend="touchend"
-			@touchcancel="touchcancel"
-		></canvas>
+		<view class="container">
+			<view class="header-container">
+				<view>
+					<image class="logo" src="../../static/logo.png"></image>
+				</view>
+				<view class="progress">
+					<progress-bar :rate="rate"></progress-bar>
+				</view>
+				<view class="count-down-container">
+					<count-down ref="countDownor" @stop="onCountDownStop()"></count-down>
+				</view>
+			</view>
+			<canvas
+				type="2d"
+				:style="{ width: W + 'px', height: H + 'px' }"
+				canvas-id="firstCanvas"
+				id="firstCanvas"
+				@touchstart="touchstart"
+				@touchmove="touchmove"
+				@touchend="touchend"
+				@touchcancel="touchcancel"
+			>
+			</canvas>
+		</view>
 	</view>
 </template>
 
 <script>
-// import {  }
+import { env } from "../../difine.js"
+import progressBar from "../../component/progress.vue";
+import countDown from "../../component/count-down.vue";
 import { rand, queryPtInPolygon, getDistance } from "../../util.js";
 const INTERVAL_TIME = 900;
 let XE_ID = 0;
 
 const W = uni.getSystemInfoSync().windowWidth;
-const H = uni.getSystemInfoSync().windowHeight;
+const top = uni.getSystemInfoSync().windowHeight * 0.23;
+const H = uni.getSystemInfoSync().windowHeight - top;
 const dpr = wx.getSystemInfoSync().pixelRatio;
 
-const PZW = 136;
-const PZH = 116;
+const PZW = 45.3 * dpr;
+const PZH = 38.6 * dpr;
 const x = W / 2 - PZW / 2;
 const y = H - PZH - 34;
 const pingzi = {
@@ -38,7 +65,8 @@ const pingzi = {
 	x3: x,
 	y3: y + PZW,
 	width: PZW,
-	height: PZH
+	height: PZH,
+	img: null
 };
 
 const StatusDefine = {
@@ -78,114 +106,144 @@ const ifInPingZi = pos => {
 
 	return false;
 };
+
+let elementGenretor = null;
 export default {
+	components: { progressBar, countDown },
 	data() {
 		return {
+			env,
+			top,
 			W,
 			H,
 			ctx: null,
 			pzList: [],
-			bgImg: 'https://wanzhuan-activity.oss-cn-hangzhou.aliyuncs.com/assets/zh-CN/background_c.png'
+			bgImg: `${env.resourcesUrl}/zh-CN/background_c.png`,
+			images: [],
+			rate: 0,
+			rate1: 0,
+			showMask: false,
+			passMask: false,
+			reqId: null,
+			canvas: null
 		};
 	},
 	onLoad() {
+		console.log(this.$globalData);
 		const that = this;
 		const query = uni.createSelectorQuery();
 		query
 			.select("#firstCanvas")
 			.fields({ node: true, size: true })
 			.exec(res => {
-				console.log(res);
+				// console.log(res);
+				
 				const canvas = res[0].node;
-
+				this.canvas = canvas;
 				canvas.width = res[0].width * dpr;
 				canvas.height = res[0].height * dpr;
-
 				this.ctx = canvas.getContext("2d");
 				this.ctx.scale(dpr, dpr);
 				const chengfenImagesUrl = [
-					"./../../static/icon_component_hong.png",
-					"./../../static/icon_component_jiao.png",
-					"./../../static/icon_component_shen.png",
-					"./../../static/icon_component_yan.png",
-					"./../../static/icon_harmful_factor.a.png",
-					"./../../static/icon_harmful_factor.b.png",
-					"./../../static/icon_harmful_factor.c.png"
+					{
+						valid: true,
+						img: './../../static/icon_component_hong.png'
+					},
+					{
+						valid: true,
+						img: './../../static/icon_component_jiao.png'
+					},
+					{
+						valid: true,
+						img: './../../static/icon_component_shen.png'
+					},
+					{
+						valid: true,
+						img: './../../static/icon_component_yan.png'
+					},
+					{
+						valid: false,
+						img: './../../static/icon_harmful_factor.a.png'
+					},
+					{
+						valid: false,
+						img: './../../static/icon_harmful_factor.b.png'
+					},
+					{
+						valid: false,
+						img: './../../static/icon_harmful_factor.c.png'
+					}
 				];
-				let images = [];
+				
 				chengfenImagesUrl.forEach(e => {
 					//可以是本地，也可以是网络图片
 					let pic = canvas.createImage();
-					pic.src = e;
-					images.push(pic);
+					pic.src = e.img;
+					e.img = pic
+					this.images.push(e);
 					pic.onload = () => {
 						//不要用官方示例的图片路径，包括网上在这之前所有的文档/示例里是地址链接的都不要看了，要用image对象！
-						// this.ctx.beginPath();
-						//this.ctx.drawImage(pic, 120, H - 80, 40, 40);
-						// this.ctx.closePath();
 						// this.ctx.drawImage(pic, 180, 600, 40, 40);
 					};
 				});
 				
-				// let pic = canvas.createImage();
-				// pic.src = "./../../static/icon_component_hong.png";
-				let pic1 = canvas.createImage();
-				pic1.src = "./../../static/product.img_fresh.png";
-				
-				let categorizes = [];
-				let categorize = null;
-
-				setInterval(() => {
-					categorize = that.createCategorize(rand(40, W - 75), 0, 40, 40, images[rand(0,6)]);
-					categorizes.push(categorize);
-				}, INTERVAL_TIME);
-				let ii = 0;
-				function startLoop() {
-					that.ctx.clearRect(0, 0, W, H);
-					canvas.requestAnimationFrame(startLoop);
-					categorizes.forEach((s, i) => {
-						s.update();
-						s.draw();
-
-						if (s.y >= H) {
-							//大于屏幕高度的就从数组里去掉
-							categorizes.splice(i, 1);
-						}
-					});
-					// that.ctx.setFontSize(20);
-					that.pzList.forEach((e, i) => {
-						setTimeout(function calle() {
-							if(e.timeout && e.textAlpha <= 0) {
-								that.pzList.splice(0, that.pzList.length > 4 ? 2 : 1);
-								clearTimeout(e.timeout);
-								return;
-							}
-							e.textAlpha -= 0.002;
-							if(!e['timeout']) {
-								e['timeout'] = setTimeout(calle, 200);
-							}
-							
-						},0);
-						// e.textAlpha -= 0.0016;
-						that.ctx.font = `${13}px`;
-						that.ctx.fillStyle = `rgba(56, 30, 21, ${e.textAlpha})`;
-						that.ctx.fillText(`+红茶立体抗衰老成分`, pingzi.x + PZW / 2, pingzi.y - 5 - 20 * i);
-						that.ctx.textAlign = "center";
-					});
-					
-
-					that.ctx.drawImage(pic1, pingzi.x, pingzi.y, pingzi.width, pingzi.height);
+				pingzi.img = canvas.createImage();
+				pingzi.img.src = "./../../static/product.img_fresh.png";
+				pingzi.img.onload = () => {
+					this.ctx.drawImage(pingzi.img, pingzi.x, pingzi.y, pingzi.width, pingzi.height);
+					this.startGame();
 				}
-				// setTimeout(function calle() {
-				// 	if(that.pzList.length >= 1) {
-				// 		that.pzList.splice(0, that.pzList.length > 4 ? 2 : 1);
-				// 	}
-				// 	setTimeout(calle, 1500);
-				// }, 3000)
-				startLoop();
+				
 			});
 	},
 	methods: {
+		startGame() {
+			const that = this;
+			let categorizes = [];
+			let categorize = null;
+			
+			setTimeout(function calle() {
+				categorize = that.createCategorize(rand(40, W - 75), 0, 40, 40, that.images[rand(0,6)]);
+				categorizes.push(categorize);
+				elementGenretor = setTimeout(calle, INTERVAL_TIME)
+			}, 0);
+			
+			const startLoop = () => {
+				this.ctx.clearRect(0, 0, W, H);
+				this.reqId = this.canvas.requestAnimationFrame(startLoop);
+				categorizes.forEach((s, i) => {
+					s.update();
+					s.draw();
+			
+					if (s.y >= H) {
+						//大于屏幕高度的就从数组里去掉
+						categorizes.splice(i, 1);
+					}
+				});
+				this.pzList.forEach((e, i) => {
+					setTimeout(function calle() {
+						if(e.timeout && e.textAlpha <= 0) {
+							that.pzList.splice(0, that.pzList.length > 4 ? 2 : 1);
+							clearTimeout(e.timeout);
+							return;
+						}
+						e.textAlpha -= 0.002;
+						if(!e['timeout']) {
+							e['timeout'] = setTimeout(calle, 200);
+						}
+						
+					},0);
+					this.ctx.font = `${13}px`;
+					this.ctx.fillStyle = `rgba(56, 30, 21, ${e.textAlpha})`;
+					this.ctx.fillText(`+红茶立体抗衰老成分`, pingzi.x + PZW / 2, pingzi.y - 5 - 20 * i);
+					this.ctx.textAlign = "center";
+				});
+				
+				this.ctx.drawImage(pingzi.img, pingzi.x, pingzi.y, pingzi.width, pingzi.height);
+			}
+			
+			startLoop();
+		},
 		touchstart(e) {
 			const canvasPos = getCanvasPosition(e);
 			if (ifInPingZi(canvasPos)) {
@@ -225,25 +283,22 @@ export default {
 			}
 		},
 		touchend(e) {
-			// console.log(e);
 			if (canvasInfo.status === StatusDefine.DRAGING) {
 				canvasInfo.status = StatusDefine.IDLE;
 			}
 		},
 		touchcancel(e) {
-			// console.log(e);
 			if (canvasInfo.status === StatusDefine.DRAGING) {
 				canvasInfo.status = StatusDefine.IDLE;
 			}
 		},
-
 		createCategorize(x, y, width, height, image) {
 			const that = this;
 			function Categorize(x, y, width, height, image) {
 				this.id = XE_ID++;
 				this.x = x;
 				this.y = y;
-				this.width = rand(40, 75);
+				this.width = rand(13.3, 25) * dpr;
 				this.height = this.width;
 				this.image = image;
 				this.textAlpha = 1;
@@ -263,29 +318,71 @@ export default {
 				if (!right) {
 					xfanweinei = pingzi.x - this.x >= -PZW;
 				}
-
-				if (xfanweinei && this.y === pingzi.y) {
+				if (xfanweinei && (this.y - pingzi.y) > 0 && (this.y - pingzi.y) < 5) {
 					// console.log(`${this.id}:碰撞了。。。`);
 					that.pzList.push(this);
+					if(this.image.valid && that.rate < 100) {
+						that.rate1 += 100 / 12;
+						that.rate = Math.round(that.rate1);
+					}
+				  if (that.rate >= 100) {
+						that.$refs.countDownor.stopDown();
+						that.canvas.cancelAnimationFrame(that.reqId);
+						setTimeout(() => {
+							that.ctx.clearRect(0, 0, W, H);
+							that.passMask = true;
+							setTimeout(() => {
+								uni.navigateTo({
+									url: '/pages/detail/detail'
+								})
+							},3000);
+						}, 200);
+						
+					}
+					
 					this.y = 10000;
 				}
 			};
 
 			Categorize.prototype.draw = function() {
-				that.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+				that.ctx.drawImage(this.image.img, this.x, this.y, this.width, this.height);
 			};
 
 			return new Categorize(x, y, width, height, image);
+		},
+		onCountDownStop() {
+			this.canvas.cancelAnimationFrame(this.reqId);
+			clearTimeout(elementGenretor);
+			setTimeout(() => {
+				this.ctx.clearRect(0, 0, W, H);
+				this.showMask = true;
+			}, 200)
+			
+		},
+		onAgain() {
+			this.restore();
+			this.startGame();
+		},
+		restore() {
+			this.pzList = [];
+			this.rate = 0;
+			this.rate1 = 0;
+			this.showMask = false;
+			this.$refs.countDownor.restart();
 		}
 	}
 };
 </script>
 
-<style lang="less">
+<style scoped lang="less">
 .content {
 	position: relative;
+	width: 100vw;
 	height: 100vh;
 	.bg {
+		position: fixed;
+		top: 0;
+		left: 0;
 		height: 100vh;
 		width: 100%;
 		image {
@@ -293,10 +390,106 @@ export default {
 			width: 100%;
 		}
 	}
-	#firstCanvas {
+	.container {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+		.header-container {
+			position: relative;
+			padding-top: 8vh;
+			height: 23%;
+			width: 100%;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			box-sizing: border-box;
+			justify-content: space-between;
+			.logo {
+				width: 300rpx;
+				height: 124rpx;
+				
+			}
+			.progress {
+				width: 80%;
+			}
+			.count-down-container {
+				position: absolute;
+				right: 40rpx;
+				top: 50%;
+			}
+		}
+		
+		#firstCanvas {
+			// position: fixed;
+			// top: 0;
+			z-index: 1000;
+			// flex: 0.8;
+			// width: 100%;
+			// height: 80%;
+		}
+	}
+	.mask-again {
 		position: fixed;
 		top: 0;
-		z-index: 1000;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		z-index: 9999;
+		background-color: rgba(45, 21, 0, 0.75);
+		.again-btn {
+			position: absolute;
+			top: 50%;
+			bottom: 50%;
+			left: 0;
+			right: 0;
+			width: 368rpx;
+			height: 88rpx;
+			line-height: 88rpx;
+			font-size: 40rpx;
+			color: #fff;
+			border:1px solid;
+			border-image: linear-gradient(93.46deg, #ffecba 0%, #fff 48.94%, #ffecba 100%) 2 2 2 2;
+			background-color: rgba(255, 242, 217, 0.27);
+		}
+	}
+	
+	.mask-pass {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		z-index: 9999;
+		background-color: rgba(45, 21, 0, 0.75);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		.pass-content {
+			position: relative;
+			width: 100%;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			.guangsu {
+				width: 100%;
+				height: auto;
+			}
+			.product {
+				position: absolute;
+				bottom: -10rpx;
+				width: 469.22rpx;
+				height: auto;
+
+			}
+			.lizi {
+				position: absolute;
+				bottom: 0;
+				width: 469.22rpx;
+				height: auto;
+			}
+		}
 	}
 }
+
 </style>

@@ -21,6 +21,33 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 /*每个页面公共css */
+button {
+	position: relative;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: 0px;
+	padding-right: 0px;
+	box-sizing: border-box;
+	// font-size: 18px;
+	text-align: center;
+	text-decoration: none;
+	// line-height: 1;
+	line-height: 1.35;
+	// border-radius: 5px;
+	-webkit-tap-highlight-color: transparent;
+	overflow: hidden;
+	color: #000000;
+	background-color: #fff;
+	width: 100%;
+	height: 100%;
+	border-radius: 0;
+	&:after {
+		border: none;
+	}
+	
+}
+
 </style>

@@ -3,6 +3,9 @@
 		<view class="bg">
 			<!-- <image :src="bgImg" mode="heightFix"></image> -->
 		</view>
+		<view class="wanwa" v-if="goPlayShow">
+			<image @click="goPlay" mode="widthFix" :src="`${env.resourcesUrl}/zh-CN/Game.play.png`"></image>
+		</view>
 		<navigation-bar>
 			<view class="lang-bar">
 				<text v-for="lang in langBtns" :key="lang.value" @click="onLangChange(lang)">
@@ -41,7 +44,8 @@ export default {
 			langBtns,
 			lang: langBtns[1].value,
 			isAgree: false,
-			confirmedOpen: false
+			confirmedOpen: false,
+			goPlayShow: false
 		};
 	},
 	computed: {
@@ -55,6 +59,10 @@ export default {
 	},
 	methods: {
 		start() {
+			
+			this.goPlayShow = true;
+		},
+		goPlay() {
 			uni.navigateTo({
 				url: '/pages/game/index'
 			});
@@ -159,10 +167,12 @@ export default {
 	}
 	
 	.clause-container {
+		padding-top: 12vh;
 		position: fixed;
-		top: 13vh;
+		top: 0;
+		left: 0;
 		width: 100vw;
-		
+		height: 100vh;
 		z-index: 100;
 	}
 
@@ -178,6 +188,18 @@ export default {
 		image {
 			width: 100vw;
 			height: 100vh;
+		}
+	}
+	
+	.wanwa {
+		width: 100vw;
+		height: 100vh;
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 9999;
+		image {
+			width: 100%;
 		}
 	}
 }
