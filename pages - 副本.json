@@ -14,6 +14,12 @@
 			}
 		},
 		{
+			"path": "pages/game/index1",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": "",
@@ -46,7 +52,7 @@
 		"current": 0, //当前激活的模式(list 的索引项)
 		"list": [{
 			"name": "game",
-				"path": "pages/game/index"
+				"path": "pages/game/index1"
 			},{
 				"name": "index",
 				"path": "pages/index/index"

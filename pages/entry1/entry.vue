@@ -63,7 +63,7 @@ export default {
 			this.goPlayShow = true;
 		},
 		goPlay() {
-			uni.navigateTo({
+			uni.redirectTo({
 				url: '/pages/game/index'
 			});
 		},

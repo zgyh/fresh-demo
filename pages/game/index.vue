@@ -106,8 +106,11 @@ const ifInPingZi = pos => {
 
 	return false;
 };
-
+let canvas = null;
 let elementGenretor = null;
+let pzList = [];
+let reqId = null;
+let ctx = null;
 export default {
 	components: { progressBar, countDown },
 	data() {
@@ -116,16 +119,12 @@ export default {
 			top,
 			W,
 			H,
-			ctx: null,
-			pzList: [],
 			bgImg: `${env.resourcesUrl}/zh-CN/background_c.png`,
 			images: [],
 			rate: 0,
 			rate1: 0,
 			showMask: false,
 			passMask: false,
-			reqId: null,
-			canvas: null
 		};
 	},
 	onLoad() {
@@ -138,12 +137,12 @@ export default {
 			.exec(res => {
 				// console.log(res);
 				
-				const canvas = res[0].node;
-				this.canvas = canvas;
+				canvas = res[0].node;
+				canvas = canvas;
 				canvas.width = res[0].width * dpr;
 				canvas.height = res[0].height * dpr;
-				this.ctx = canvas.getContext("2d");
-				this.ctx.scale(dpr, dpr);
+				ctx = canvas.getContext("2d");
+				ctx.scale(dpr, dpr);
 				const chengfenImagesUrl = [
 					{
 						valid: true,
@@ -183,14 +182,16 @@ export default {
 					this.images.push(e);
 					pic.onload = () => {
 						//不要用官方示例的图片路径，包括网上在这之前所有的文档/示例里是地址链接的都不要看了，要用image对象！
-						// this.ctx.drawImage(pic, 180, 600, 40, 40);
+						// ctx.drawImage(pic, 180, 600, 40, 40);
 					};
 				});
+				pingzi.img1 = canvas.createImage();
+				pingzi.img1.src = `${env.resourcesUrl}/zh-CN/product.img_fresh_b.png`;
 				
 				pingzi.img = canvas.createImage();
 				pingzi.img.src = "./../../static/product.img_fresh.png";
 				pingzi.img.onload = () => {
-					this.ctx.drawImage(pingzi.img, pingzi.x, pingzi.y, pingzi.width, pingzi.height);
+					ctx.drawImage(pingzi.img, pingzi.x, pingzi.y, pingzi.width, pingzi.height);
 					this.startGame();
 				}
 				
@@ -207,10 +208,11 @@ export default {
 				categorizes.push(categorize);
 				elementGenretor = setTimeout(calle, INTERVAL_TIME)
 			}, 0);
+		 
 			
 			const startLoop = () => {
-				this.ctx.clearRect(0, 0, W, H);
-				this.reqId = this.canvas.requestAnimationFrame(startLoop);
+				ctx.clearRect(0, 0, W, H);
+				reqId = canvas.requestAnimationFrame(startLoop);
 				categorizes.forEach((s, i) => {
 					s.update();
 					s.draw();
@@ -220,10 +222,10 @@ export default {
 						categorizes.splice(i, 1);
 					}
 				});
-				this.pzList.forEach((e, i) => {
+				pzList.forEach((e, i) => {
 					setTimeout(function calle() {
 						if(e.timeout && e.textAlpha <= 0) {
-							that.pzList.splice(0, that.pzList.length > 4 ? 2 : 1);
+							pzList.splice(0, pzList.length > 4 ? 2 : 1);
 							clearTimeout(e.timeout);
 							return;
 						}
@@ -233,13 +235,13 @@ export default {
 						}
 						
 					},0);
-					this.ctx.font = `${13}px`;
-					this.ctx.fillStyle = `rgba(56, 30, 21, ${e.textAlpha})`;
-					this.ctx.fillText(`+红茶立体抗衰老成分`, pingzi.x + PZW / 2, pingzi.y - 5 - 20 * i);
-					this.ctx.textAlign = "center";
+					ctx.font = `${13}px`;
+					ctx.fillStyle = `rgba(56, 30, 21, ${e.textAlpha})`;
+					ctx.fillText(`+红茶立体抗衰老成分`, pingzi.x + PZW / 2, pingzi.y - 5 - 20 * i);
+					ctx.textAlign = "center";
 				});
 				
-				this.ctx.drawImage(pingzi.img, pingzi.x, pingzi.y, pingzi.width, pingzi.height);
+				ctx.drawImage(pingzi.img, pingzi.x, pingzi.y, pingzi.width, pingzi.height);
 			}
 			
 			startLoop();
@@ -305,7 +307,7 @@ export default {
 			}
 
 			Categorize.prototype.update = function() {
-				this.y += 1;
+				this.y += 1 * dpr;
 				let xfanweinei = false;
 				if (pingzi.x - this.x === 0) {
 					xfanweinei = true;
@@ -320,16 +322,17 @@ export default {
 				}
 				if (xfanweinei && (this.y - pingzi.y) > 0 && (this.y - pingzi.y) < 5) {
 					// console.log(`${this.id}:碰撞了。。。`);
-					that.pzList.push(this);
+					pingzi.img = pingzi.img1
+					pzList.push(this);
 					if(this.image.valid && that.rate < 100) {
 						that.rate1 += 100 / 12;
 						that.rate = Math.round(that.rate1);
 					}
 				  if (that.rate >= 100) {
 						that.$refs.countDownor.stopDown();
-						that.canvas.cancelAnimationFrame(that.reqId);
+						canvas.cancelAnimationFrame(reqId);
 						setTimeout(() => {
-							that.ctx.clearRect(0, 0, W, H);
+							ctx.clearRect(0, 0, W, H);
 							that.passMask = true;
 							setTimeout(() => {
 								uni.navigateTo({
@@ -345,16 +348,16 @@ export default {
 			};
 
 			Categorize.prototype.draw = function() {
-				that.ctx.drawImage(this.image.img, this.x, this.y, this.width, this.height);
+				ctx.drawImage(this.image.img, this.x, this.y, this.width, this.height);
 			};
 
 			return new Categorize(x, y, width, height, image);
 		},
 		onCountDownStop() {
-			this.canvas.cancelAnimationFrame(this.reqId);
+			canvas.cancelAnimationFrame(reqId);
 			clearTimeout(elementGenretor);
 			setTimeout(() => {
-				this.ctx.clearRect(0, 0, W, H);
+				ctx.clearRect(0, 0, W, H);
 				this.showMask = true;
 			}, 200)
 			
@@ -364,7 +367,7 @@ export default {
 			this.startGame();
 		},
 		restore() {
-			this.pzList = [];
+			pzList = [];
 			this.rate = 0;
 			this.rate1 = 0;
 			this.showMask = false;
