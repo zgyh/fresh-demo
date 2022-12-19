@@ -17,6 +17,6 @@
 	position: fixed;
 	width: 100%;
 	top: 0;
-	z-index: 9999;
+	z-index: 9998;
 }
 </style>

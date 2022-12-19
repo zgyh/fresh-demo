@@ -4,7 +4,34 @@
 			<!-- <image :src="bgImg" mode="heightFix"></image> -->
 		</view>
 		<view class="wanwa" v-if="goPlayShow">
-			<image @click="goPlay" mode="widthFix" :src="`${env.resourcesUrl}/zh-CN/Game.play.png`"></image>
+			<view class="wanfa-title">
+				<view class="wanfa-title_content">
+					<text>收集红茶凝时焕活面霜的</text>
+					<text>四种核心成分气泡,</text>
+					<text>合成馥蕾诗的天然抗老奇迹。</text>
+				</view>
+			</view>
+			<view class="wanfa-content">
+				<view class="row">
+					<view class="setp setp1">
+						<view class="setp setp1-a"></view>
+					</view>
+					<view class="setp" :class="{ setp2: isSetp2}">
+						<view class="setp setp2-a"></view>
+					</view>
+				</view>
+				<view class="row1">
+					<view class="row1-contnet">
+						<view class="setp" :class="{'setp3-a': isSetp3}"></view>
+						<view class="setp" :class="{setp3: isSetp3}"></view>
+					</view>
+				</view>
+				<view class="row2">
+					<view class="setp" :class="{setp4: isSetp4}"></view>
+				</view>
+				
+			</view>
+			<button class="zhidaole" v-if="showBtn" @click="goPlay()">我知道了</button>
 		</view>
 		<navigation-bar>
 			<view class="lang-bar">
@@ -21,7 +48,7 @@
 					<image class="icon-agreement" v-show="!isAgree" src="../../static/choice_b.png"></image>
 					<image class="icon-agreement" v-show="isAgree" src="../../static/choice_a.png"></image>
 				</view>
-				<text>授权同意隐私协议与用户手册</text>
+				<text class="txt" @click="onAgreement()">授权同意隐私协议与用户手册</text>
 			</view>
 			<view class="ps">*源自第三方实验室数据，经检测产品不含视黄醇</view>
 		</view>
@@ -45,7 +72,11 @@ export default {
 			lang: langBtns[1].value,
 			isAgree: false,
 			confirmedOpen: false,
-			goPlayShow: false
+			goPlayShow: false,
+			isSetp2: false,
+			isSetp3: false,
+			isSetp4: false,
+			showBtn: false
 		};
 	},
 	computed: {
@@ -59,8 +90,26 @@ export default {
 	},
 	methods: {
 		start() {
-			
-			this.goPlayShow = true;
+			if (this.isAgree) {
+				this.goPlayShow = true;
+				setTimeout(() => {
+					this.isSetp2 = true;
+					setTimeout(() => {
+						this.isSetp3 = true;
+						setTimeout(() => {
+							this.isSetp4 = true;
+							setTimeout(() => {
+								this.showBtn = true;
+							}, 1000);
+						}, 1000);
+					}, 1000);
+				},1000)
+			} else {
+				uni.showToast({
+					title: '请勾选知情同意书~',
+					icon: 'none'
+				})
+			}
 		},
 		goPlay() {
 			uni.redirectTo({
@@ -72,9 +121,9 @@ export default {
 		},
 		onAgreementChange() {
 			this.isAgree = !this.isAgree;
-			if(this.isAgree) {
-				this.confirmedOpen = true;
-			}
+		},
+		onAgreement() {
+			this.confirmedOpen = true;
 		},
 		onConfirm() {
 			this.confirmedOpen = false;
@@ -84,10 +133,19 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import url('../../animation.css');
 .zh-CN {
 	$lang: "/zh-CN/";
 	.bg {
 		background-image: url($IMG_URL+$lang+"background.png");
+	}
+	.setp1 {
+		background-image: url('../../static/step_a.png');
+	}
+	.setp1-a {
+		background-image: url('../../static/arrow_a.png');
+	}
+	.setp2 {
 	}
 }
 .zh-HK {
@@ -157,7 +215,10 @@ export default {
 				height: 40rpx;
 				margin-right: 20rpx;
 			}
-			
+			.txt {
+				border-bottom: 1rpx solid $uni-text-color;
+				line-height: 32rpx;
+			}
 		}
 		.ps {
 			margin-top: 20rpx;
@@ -181,8 +242,8 @@ export default {
 		top: 0;
 		left: 0;
 		width: 100%;
-		min-height: 896px;
-		background-size: 100% auto;
+		height: 100%;
+		background-size: 100% 100%;
 		// background-repeat: repeat;
 		z-index: 1;
 		image {
@@ -198,8 +259,118 @@ export default {
 		top: 0;
 		left: 0;
 		z-index: 9999;
-		image {
+		background-color: rgba(0, 0, 0, 0.85);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		.wanfa-title {
 			width: 100%;
+			height: 28vh;
+			display: flex;
+			flex-direction: column;
+			justify-content: flex-end;
+			align-items: center;
+			padding-bottom: 3vh;
+			.wanfa-title_content {
+				font-size: 24rpx;
+				letter-spacing: 0.2rpx;
+				text-align: center;
+				color: #fff;
+				text {
+					display: block;
+					line-height: 44rpx;
+				}
+			}
+		}
+		.wanfa-content {
+			width: 90vw;
+			.row {
+				position: relative;
+				display: flex;
+				justify-content: space-between;
+			}
+			.row1 {
+				position: relative;
+				top: 100rpx;
+				display: flex;
+				justify-content: center;
+				.row1-contnet {
+					display: flex;
+					position: relative;
+					left: 80rpx;
+					top: -80rpx;
+				}
+			}
+			.row2 {
+				position: relative;
+				left: 100rpx;
+			}
+			.setp {
+				background-size: contain;
+				background-repeat: no-repeat;
+				background-position: center;
+			}
+			.setp1 {
+				position: relative;
+				width: 20vh;
+				height: 17vh;
+				animation-name: example;
+				animation-duration: 2s;
+				.setp1-a {
+					position: absolute;
+					right: -150rpx;
+					width: 200rpx;
+					height: 100rpx;
+				}
+			}
+			.setp2{
+				position: relative;
+				animation-name: example1;
+				animation-duration: 2s;
+				width: 20vh;
+				height: 17vh;
+				background-image: url('../../static/step_a.png');
+				.setp2-a {
+					position: absolute;
+					bottom: -180rpx;
+					right: 100rpx;
+					width: 60rpx;
+					height: 240rpx;
+					background-image: url('../../static/arrow_b.png');
+				}
+			}
+			.setp3-a {
+				animation-name: example1;
+				animation-duration: 2s;
+				position: relative;
+				top: 130rpx;
+				width: 100rpx;
+				height: 200rpx;
+				background-image: url('../../static/arrow_c.png');
+			}
+			.setp3{
+				animation-name: example1;
+				animation-duration: 2s;
+				width: 14vh;
+				height: 17vh;
+				background-image: url('../../static/step_c.png');
+			}
+			.setp4 {
+				animation-name: example;
+				animation-duration: 2s;
+				width: 20vh;
+				height: 17vh;
+				background-image: url('../../static/step_d.png');
+			}
+		}
+		.zhidaole {
+			margin-top: 40rpx;
+			width: 368rpx;
+			height: 88rpx;
+			line-height: 88rpx;
+			background: transparent;
+			border: 2rpx solid #fff;
+			color: #fff;
 		}
 	}
 }

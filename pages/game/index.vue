@@ -128,7 +128,6 @@ export default {
 		};
 	},
 	onLoad() {
-		console.log(this.$globalData);
 		const that = this;
 		const query = uni.createSelectorQuery();
 		query
@@ -144,6 +143,22 @@ export default {
 				ctx = canvas.getContext("2d");
 				ctx.scale(dpr, dpr);
 				const chengfenImagesUrl = [
+					{
+						valid: true,
+						img: './../../static/icon_component_hong.png'
+					},
+					{
+						valid: true,
+						img: './../../static/icon_component_jiao.png'
+					},
+					{
+						valid: true,
+						img: './../../static/icon_component_shen.png'
+					},
+					{
+						valid: true,
+						img: './../../static/icon_component_yan.png'
+					},
 					{
 						valid: true,
 						img: './../../static/icon_component_hong.png'
@@ -185,8 +200,6 @@ export default {
 						// ctx.drawImage(pic, 180, 600, 40, 40);
 					};
 				});
-				pingzi.img1 = canvas.createImage();
-				pingzi.img1.src = `${env.resourcesUrl}/zh-CN/product.img_fresh_b.png`;
 				
 				pingzi.img = canvas.createImage();
 				pingzi.img.src = "./../../static/product.img_fresh.png";
@@ -202,9 +215,9 @@ export default {
 			const that = this;
 			let categorizes = [];
 			let categorize = null;
-			
+			let msg = ''
 			setTimeout(function calle() {
-				categorize = that.createCategorize(rand(40, W - 75), 0, 40, 40, that.images[rand(0,6)]);
+				categorize = that.createCategorize(rand(40, W - 75), 0, 40, 40, that.images[rand(0,10)]);
 				categorizes.push(categorize);
 				elementGenretor = setTimeout(calle, INTERVAL_TIME)
 			}, 0);
@@ -237,7 +250,13 @@ export default {
 					},0);
 					ctx.font = `${13}px`;
 					ctx.fillStyle = `rgba(56, 30, 21, ${e.textAlpha})`;
-					ctx.fillText(`+红茶立体抗衰老成分`, pingzi.x + PZW / 2, pingzi.y - 5 - 20 * i);
+					if (e.image.valid) {
+						msg = '+红茶立体抗衰老成分';
+					} else {
+						msg = '+伤害皮肤因子'
+					}
+					
+					ctx.fillText(msg, pingzi.x + PZW / 2, pingzi.y - 5 - 20 * i);
 					ctx.textAlign = "center";
 				});
 				
@@ -321,8 +340,6 @@ export default {
 					xfanweinei = pingzi.x - this.x >= -PZW;
 				}
 				if (xfanweinei && (this.y - pingzi.y) > 0 && (this.y - pingzi.y) < 5) {
-					// console.log(`${this.id}:碰撞了。。。`);
-					pingzi.img = pingzi.img1
 					pzList.push(this);
 					if(this.image.valid && that.rate < 100) {
 						that.rate1 += 100 / 12;
@@ -334,11 +351,13 @@ export default {
 						setTimeout(() => {
 							ctx.clearRect(0, 0, W, H);
 							that.passMask = true;
+							pzList = [];
+							that.$refs.countDownor.stopDown();
 							setTimeout(() => {
-								uni.navigateTo({
+								uni.redirectTo({
 									url: '/pages/detail/detail'
 								})
-							},3000);
+							},5000);
 						}, 200);
 						
 					}
@@ -354,6 +373,7 @@ export default {
 			return new Categorize(x, y, width, height, image);
 		},
 		onCountDownStop() {
+			console.log('--------onCountDownStop');
 			canvas.cancelAnimationFrame(reqId);
 			clearTimeout(elementGenretor);
 			setTimeout(() => {

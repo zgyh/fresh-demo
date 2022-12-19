@@ -15,7 +15,7 @@
 		
 		<view class="page">
 			<view class="item">
-				<image mode="widthFix" :src="`${env.resourcesUrl}/zh-CN/details_ background.png`"></image>
+				<image :src="`${env.resourcesUrl}/zh-CN/details_ background.png`"></image>
 			</view>
 			<view class="footer-container">
 				<view class="dengji">
@@ -224,10 +224,11 @@ export default {
 		}
 	}
 	.item {
+		height: 100%;
 		font-size: 0;
 		image {
 			width: 100%;
-			
+			height: 100%;
 		}
 	}
 	.banner {
