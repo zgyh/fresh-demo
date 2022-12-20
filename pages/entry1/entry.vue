@@ -5,6 +5,7 @@
 		</view>
 		<view class="wanwa" v-if="goPlayShow">
 			<view class="wanfa-title">
+				<view class="wanfa-title-header"></view>
 				<view class="wanfa-title_content">
 					<text>收集红茶凝时焕活面霜的</text>
 					<text>四种核心成分气泡,</text>
@@ -62,7 +63,7 @@
 import { env, langBtns } from "../../difine.js";
 import NavigationBar from "../../component/navigation-bar.vue";
 import clause from '../../component/clause.vue';
-
+// const vas = require(env.resourcesUrl+'/gif/synthesis_animation.png')
 export default {
 	components: { NavigationBar, clause },
 	data() {
@@ -139,13 +140,20 @@ export default {
 	.bg {
 		background-image: url($IMG_URL+$lang+"background.png");
 	}
-	.setp1 {
-		background-image: url('../../static/step_a.png');
+	.wanfa-title-header {
+		background-image: url($IMG_URL+$lang+'game_title.png');
 	}
-	.setp1-a {
-		background-image: url('../../static/arrow_a.png');
+	.setp1 {
+		background-image: url($IMG_URL+$lang+'step_a.png');
 	}
 	.setp2 {
+		background-image: url($IMG_URL+$lang+'step_b.png');
+	}
+	.setp3 {
+		background-image: url($IMG_URL+$lang+'step_c.png');
+	}
+	.setp4 {
+		background-image: url($IMG_URL+$lang+'step_d.png');
 	}
 }
 .zh-HK {
@@ -265,12 +273,19 @@ export default {
 		align-items: center;
 		.wanfa-title {
 			width: 100%;
-			height: 28vh;
+			height: 26vh;
 			display: flex;
 			flex-direction: column;
 			justify-content: flex-end;
 			align-items: center;
 			padding-bottom: 3vh;
+			.wanfa-title-header {
+				background-size: contain;
+				background-repeat: no-repeat;
+				background-position: center;
+				width: 320rpx;
+				height: 150rpx;
+			}
 			.wanfa-title_content {
 				font-size: 24rpx;
 				letter-spacing: 0.2rpx;
@@ -291,7 +306,7 @@ export default {
 			}
 			.row1 {
 				position: relative;
-				top: 100rpx;
+				top: 180rpx;
 				display: flex;
 				justify-content: center;
 				.row1-contnet {
@@ -303,7 +318,7 @@ export default {
 			}
 			.row2 {
 				position: relative;
-				left: 100rpx;
+				left: 50rpx;
 			}
 			.setp {
 				background-size: contain;
@@ -321,15 +336,16 @@ export default {
 					right: -150rpx;
 					width: 200rpx;
 					height: 100rpx;
+					background-image: url('../../static/arrow_a.png');
 				}
 			}
 			.setp2{
 				position: relative;
+				top: 80rpx;
 				animation-name: example1;
 				animation-duration: 2s;
 				width: 20vh;
 				height: 17vh;
-				background-image: url('../../static/step_a.png');
 				.setp2-a {
 					position: absolute;
 					bottom: -180rpx;
@@ -343,7 +359,7 @@ export default {
 				animation-name: example1;
 				animation-duration: 2s;
 				position: relative;
-				top: 130rpx;
+				top: 50rpx;
 				width: 100rpx;
 				height: 200rpx;
 				background-image: url('../../static/arrow_c.png');
@@ -353,14 +369,12 @@ export default {
 				animation-duration: 2s;
 				width: 14vh;
 				height: 17vh;
-				background-image: url('../../static/step_c.png');
 			}
 			.setp4 {
 				animation-name: example;
 				animation-duration: 2s;
 				width: 20vh;
 				height: 17vh;
-				background-image: url('../../static/step_d.png');
 			}
 		}
 		.zhidaole {

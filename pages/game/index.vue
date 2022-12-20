@@ -5,9 +5,9 @@
 		</view>
 		<view class="mask-pass" v-if="passMask">
 			<view class="pass-content">
-				<image class="guangsu" mode="widthFix" :src="`${env.resourcesUrl}/gif/guangsu.gif`"></image>
-				<image class="product" mode="widthFix" :src="`${env.resourcesUrl}/zh-CN/product.img_fresh_b.png`"></image>
-				<image class="lizi" mode="widthFix" :src="`${env.resourcesUrl}/gif/lizi.gif`"></image>
+				<image class="guangsu" mode="widthFix" :src="`${env.resourcesUrl}/zh-CN/synthesis_animation.gif`"></image>
+				<!-- <image class="product" mode="widthFix" :src="`${env.resourcesUrl}/zh-CN/product.img_fresh_b.png`"></image> -->
+				<!-- <image class="lizi" mode="widthFix" :src="`${env.resourcesUrl}/gif/lizi.gif`"></image> -->
 			</view>
 		</view>
 		<view class="bg"><image :src="bgImg"></image></view>
@@ -111,6 +111,8 @@ let elementGenretor = null;
 let pzList = [];
 let reqId = null;
 let ctx = null;
+let leftTipImg = null;
+let rightTipImg = null;
 export default {
 	components: { progressBar, countDown },
 	data() {
@@ -124,7 +126,7 @@ export default {
 			rate: 0,
 			rate1: 0,
 			showMask: false,
-			passMask: false,
+			passMask: false
 		};
 	},
 	onLoad() {
@@ -200,6 +202,14 @@ export default {
 						// ctx.drawImage(pic, 180, 600, 40, 40);
 					};
 				});
+				leftTipImg = canvas.createImage();
+				leftTipImg.src = '../../static/icon_move_left.png';
+				leftTipImg.onload = () => {
+				}
+				rightTipImg = canvas.createImage();
+				rightTipImg.src = '../../static/icon_move_right.png';
+				rightTipImg.onload = () => {
+				}
 				
 				pingzi.img = canvas.createImage();
 				pingzi.img.src = "./../../static/product.img_fresh.png";
@@ -211,7 +221,19 @@ export default {
 			});
 	},
 	methods: {
+		showGameTip() {
+			ctx.drawImage(leftTipImg, pingzi.x - 100, pingzi.y + pingzi.height / 2.5, 100, 40);
+			ctx.drawImage(rightTipImg, pingzi.x + pingzi.width, pingzi.y + pingzi.height / 2.5, 100, 40);
+			ctx.font = '12px Georgia';
+			ctx.textAlign = "center";
+			ctx.fillStyle = '#fff';
+			ctx.fillText('左 右 移 动 瓶 身 接 住 正 确 的', pingzi.x + PZW / 2, pingzi.y - 5 - 40);
+			ctx.fillText('成 分 气 泡 及 避 开 不 利 因 素', pingzi.x + PZW / 2, pingzi.y - 5 - 20);
+		},
 		startGame() {
+			setTimeout(() => {
+				this.startTime = 3;
+			}, 3000);
 			const that = this;
 			let categorizes = [];
 			let categorize = null;
@@ -235,6 +257,7 @@ export default {
 						categorizes.splice(i, 1);
 					}
 				});
+				ctx.drawImage(pingzi.img, pingzi.x, pingzi.y, pingzi.width, pingzi.height);
 				pzList.forEach((e, i) => {
 					setTimeout(function calle() {
 						if(e.timeout && e.textAlpha <= 0) {
@@ -242,7 +265,7 @@ export default {
 							clearTimeout(e.timeout);
 							return;
 						}
-						e.textAlpha -= 0.002;
+						e.textAlpha -= 0.005;
 						if(!e['timeout']) {
 							e['timeout'] = setTimeout(calle, 200);
 						}
@@ -260,9 +283,10 @@ export default {
 					ctx.textAlign = "center";
 				});
 				
-				ctx.drawImage(pingzi.img, pingzi.x, pingzi.y, pingzi.width, pingzi.height);
+				if(this.startTime !== 3) {
+					this.showGameTip();
+				}
 			}
-			
 			startLoop();
 		},
 		touchstart(e) {
@@ -357,7 +381,7 @@ export default {
 								uni.redirectTo({
 									url: '/pages/detail/detail'
 								})
-							},5000);
+							},3500);
 						}, 200);
 						
 					}
@@ -485,15 +509,9 @@ export default {
 		height: 100vh;
 		z-index: 9999;
 		background-color: rgba(45, 21, 0, 0.75);
-		display: flex;
-		justify-content: center;
-		align-items: center;
 		.pass-content {
 			position: relative;
 			width: 100%;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
 			.guangsu {
 				width: 100%;
 				height: auto;
