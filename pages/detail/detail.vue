@@ -1,34 +1,36 @@
 <template>
 	<view class="detail">
 		<view class="header-container">
-			<view>
+			<!-- <view>
 				<image class="logo" src="../../static/logo.png"></image>
 			</view>
 		 <view class="kanglao">28天抗老见证</view>
 		 <view class="mianshui">
-			 <text>-</text>
-			 <text>免税专享</text>
-			 <text>体验官招募</text>
-			 <text>-</text>
-		 </view>	 
+			  <text>-</text>
+			  <text>免税专享</text>
+			  <text>体验官招募</text>
+			  <text>-</text>
+		  </view> -->
+			<image class="logg" :src="`${env.resourcesUrl}/zh-CN/img_title_2.png`" mode="widthFix"></image>
+			<image class="buy" src="../../static/icon_ float_buy.png" mode="widthFix"></image>
 		</view>
-		
 		<view class="page">
-			<view class="item">
-				<image :src="`${env.resourcesUrl}/zh-CN/details_ background.png`"></image>
+			<view class="item1">
+				<image class="marker_500" :src="`${env.resourcesUrl}/zh-CN/icon_corner.marker_500.png`" mode="widthFix"></image>
+				<image :src="`${env.resourcesUrl}/zh-CN/version_img.png`" mode="widthFix"></image>
+				<view class="product-name">红茶凝时焕活面霜</view>
 			</view>
 			<view class="footer-container">
 				<view class="dengji">
 					<view class="btn">
 						<view class="icon"></view>
-						<view class="text">登记成为体验官</view>
+						<view class="text">免费申领</view>
 					</view>
-					<view class="tips">（限首500名）</view>
 				</view>
-				<view class="jingxi">请亲临<text>fresh</text>免税店专柜发掘更多惊喜好礼!</view>
+				<!-- <view class="jingxi">请亲临<text>fresh</text>免税店专柜领取精美礼品一份！*</view> -->
 				<view class="side"></view>
 				<view class="xiahua">下滑页面查看产品详情</view>
-				<view class="tips_bot">*每人只限换领一次，数量有限，送完即止。只限于Fresh免稅店专柜</view>
+				<!-- <view class="tips_bot">*每人只限换领一次，数量有限，送完即止。只限于Fresh免稅店专柜</view> -->
 			</view>
 		</view>
 		<view class="item">
@@ -40,7 +42,7 @@
 		<view class="banner">
 			<view class="banner-content">
 				<swiper class="swiper" :indicator-dots="false" :autoplay="false" :duration="500" @change="onChange">
-					<block v-for="item in list" :key="this">
+					<block v-for="(item, index) in list" :key="index">
 						<swiper-item>
 							<view class="swiper-item">
 								<view class="item-content">
@@ -56,12 +58,13 @@
 			<view class="back"><button @click="backHome">返回主页</button></view>
 			<view class="ps">
 				<text>*数据源于第三方实验室，经过29名受试者使用产品8周后，基于自我评估问卷中与初次使用对比得出的结果。仅供参考，实际效果因人而异</text>
-				<text>*数据源于第三方实验室，经过30名受试者使用产品4周后，基于自我评估问卷中与初次使用对比得出的结果。仅供参考，实际效果因人而异1 经11名试用者通过仪器测试得出的结果。仅供参考，实际效果因人而异。</text>
+				<text>*数据源于第三方实验室，经过30名受试者使用产品4周后，基于自我评估问卷中与初次使用对比得出的结果。仅供参考，实际效果因人而异</text>
+				<text>1 经11名试用者通过仪器测试得出的结果。仅供参考，实际效果因人而异。</text>
 				<text>2 数据源于临床试验，经22名受试者持续四周后得出的结果。仅供参考，实际效果因人而异。</text>
 				<text>3 数据源于第三方实验室，经过33名中国受试者（27名女性，6名男性，43~60岁）,每天使用两次产品于面部与颈部8周后，基于自我评估中平滑、细纹、毛孔、弹嫩（饱满和弹性）和光采程度综合评价得出的结果。仅供参考，实际效果因人而异。</text>
 				<text>4 经32名受试者持续使用产品4周后，通过自我评估得出的结果。用后肌肤即时提升。数据只供参考，实际效果因人而异。</text>
 				<text>5 数据源于第三方实验室，经过30名受试者使用产品4周后，基于自我评估问卷中与初次使用对比得出的结果。仅供参考，实际效果因人而异</text>
-				<text>6经32名试用者持续使用产品4周后，通过自我评估得出的结果。数据只供参考，实际效果因人而异。</text>
+				<text>6 经32名试用者持续使用产品4周后，通过自我评估得出的结果。数据只供参考，实际效果因人而异。</text>
 				<text>7 经32名受试者持续使用产品4周后，通过自我评估得出的结果。数据只供参考，实际效果因人而异。</text>
 			</view>
 		</view>
@@ -105,6 +108,7 @@ export default {
 <style scoped lang="scss">
 .detail {
 	position: relative;
+	background: linear-gradient(90deg, #F9ECB4 0%, #F3C186 35%, #DA9E6B 100%);
 	.header-container {
 		position: absolute;
 		padding-top: 8vh;
@@ -115,6 +119,15 @@ export default {
 		box-sizing: border-box;
 		justify-content: space-between;
 		z-index: 1;
+		.logg {
+			width: 60vw;
+		}
+		.buy {
+			position: absolute;
+			top: 12vh;
+			right: 0;
+			width: 100rpx;
+		}
 		.logo {
 			width: 300rpx;
 			height: 124rpx;
@@ -148,7 +161,7 @@ export default {
 		.footer-container {
 			position: absolute;
 			width: 100%;
-			bottom: 15px;
+			bottom: 30px;
 			display: flex;
 			flex-direction: column;
 			align-items: center;
@@ -169,8 +182,8 @@ export default {
 					align-items: center;
 				}
 				.icon {
-					width: 31.78rpx;
-					height: 38.22rpx;
+					width: 36.78rpx;
+					height: 36.22rpx;
 					background-image: url('../../static/icon_register_b.png');
 					background-repeat: no-repeat;
 					background-position: center;
@@ -223,6 +236,30 @@ export default {
 			}
 		}
 	}
+	.item1 {
+		width: 100%;
+		position: absolute;
+		top: 26vh;
+		
+		image {
+			width: 100%;
+			
+		}
+		.marker_500 {
+			width: 140rpx;
+			position: absolute;
+			right: 12vw;
+			top: 15vw;
+		}
+		.product-name {
+			position: absolute;
+			top: 85vw;
+			color: #fff;
+			font-size: 32rpx;
+			width: 100%;
+			text-align: center;
+		}
+	}
 	.item {
 		height: 100%;
 		font-size: 0;
@@ -239,7 +276,6 @@ export default {
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		background: linear-gradient(89.98deg, #f9ecb4 0%, #f3c186 48.94%, #da9e6b 100%);
 		.banner-content {
 			padding: 10rpx;
 			width: 644rpx;

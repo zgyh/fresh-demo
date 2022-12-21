@@ -147,35 +147,43 @@ export default {
 				const chengfenImagesUrl = [
 					{
 						valid: true,
-						img: './../../static/icon_component_hong.png'
+						img: './../../static/icon_component_hong.png',
+						text: '红茶立体抗衰老成分'
 					},
 					{
 						valid: true,
-						img: './../../static/icon_component_jiao.png'
+						img: './../../static/icon_component_jiao.png',
+						text: '角鲨烷'
 					},
 					{
 						valid: true,
-						img: './../../static/icon_component_shen.png'
+						img: './../../static/icon_component_shen.png',
+						text: '神经酰胺'
 					},
 					{
 						valid: true,
-						img: './../../static/icon_component_yan.png'
+						img: './../../static/icon_component_yan.png',
+						text: '艳山姜'
 					},
 					{
 						valid: true,
-						img: './../../static/icon_component_hong.png'
+						img: './../../static/icon_component_hong.png',
+						text: '红茶立体抗衰老成分'
 					},
 					{
 						valid: true,
-						img: './../../static/icon_component_jiao.png'
+						img: './../../static/icon_component_jiao.png',
+						text: '角鲨烷'
 					},
 					{
 						valid: true,
-						img: './../../static/icon_component_shen.png'
+						img: './../../static/icon_component_shen.png',
+						text: '神经酰胺'
 					},
 					{
 						valid: true,
-						img: './../../static/icon_component_yan.png'
+						img: './../../static/icon_component_yan.png',
+						text: '艳山姜'
 					},
 					{
 						valid: false,
@@ -274,7 +282,7 @@ export default {
 					ctx.font = `${13}px`;
 					ctx.fillStyle = `rgba(56, 30, 21, ${e.textAlpha})`;
 					if (e.image.valid) {
-						msg = '+红茶立体抗衰老成分';
+						msg = '+'+e.image.text;
 					} else {
 						msg = '+伤害皮肤因子'
 					}

@@ -1,7 +1,8 @@
 <template>
 	<view class="content" :class="lang">
 		<view class="bg">
-			<!-- <image :src="bgImg" mode="heightFix"></image> -->
+			<image class="img-title" :src="imgtitle" mode="widthFix"></image>
+			<image class="shouye-gif" :src="`${env.resourcesUrl}/gif/shouye.gif`" mode="widthFix"></image>
 		</view>
 		<view class="wanwa" v-if="goPlayShow">
 			<view class="wanfa-title">
@@ -14,23 +15,16 @@
 			</view>
 			<view class="wanfa-content">
 				<view class="row">
-					<view class="setp setp1">
-						<view class="setp setp1-a"></view>
-					</view>
-					<view class="setp" :class="{ setp2: isSetp2}">
-						<view class="setp setp2-a"></view>
-					</view>
+					<view class="setp setp1"><view class="setp setp1-a"></view></view>
+					<view class="setp" :class="{ setp2: isSetp2 }"><view class="setp setp2-a"></view></view>
 				</view>
 				<view class="row1">
 					<view class="row1-contnet">
-						<view class="setp" :class="{'setp3-a': isSetp3}"></view>
-						<view class="setp" :class="{setp3: isSetp3}"></view>
+						<view class="setp" :class="{ 'setp3-a': isSetp3 }"></view>
+						<view class="setp" :class="{ setp3: isSetp3 }"></view>
 					</view>
 				</view>
-				<view class="row2">
-					<view class="setp" :class="{setp4: isSetp4}"></view>
-				</view>
-				
+				<view class="row2"><view class="setp" :class="{ setp4: isSetp4 }"></view></view>
 			</view>
 			<button class="zhidaole" v-if="showBtn" @click="goPlay()">我知道了</button>
 		</view>
@@ -41,15 +35,29 @@
 				</text>
 			</view>
 		</navigation-bar>
-		
+
 		<view class="footer-container">
-			<button class="start-game-btn" hover-class="press-style" @click="start()">开 始 游 戏</button>
-			<view class="agreement-row">
+			<view class="product">红茶凝时焕活面霜</view>
+			<view class="product1">全新上市!</view>
+			<button class="start-game-btn" hover-class="press-style" open-type="getUserInfo" @click="start()">
+				探 秘 赢 好 礼
+			</button>
+			<view v-if="!noFirst" class="agreement-row">
 				<view @click="onAgreementChange()">
 					<image class="icon-agreement" v-show="!isAgree" src="../../static/choice_b.png"></image>
 					<image class="icon-agreement" v-show="isAgree" src="../../static/choice_a.png"></image>
 				</view>
 				<text class="txt" @click="onAgreement()">授权同意隐私协议与用户手册</text>
+			</view>
+			<view class="btn-group" v-else>
+				<view class="item">
+					<image src="../../static/icon_register.png"></image>
+					<view>登记成为体验官</view>
+				</view>
+				<view class="item">
+					<image src="../../static/icon_ buy.png"></image>
+					<view>点击购买</view>
+				</view>
 			</view>
 			<view class="ps">*源自第三方实验室数据，经检测产品不含视黄醇</view>
 		</view>
@@ -62,7 +70,7 @@
 <script>
 import { env, langBtns } from "../../difine.js";
 import NavigationBar from "../../component/navigation-bar.vue";
-import clause from '../../component/clause.vue';
+import clause from "../../component/clause.vue";
 // const vas = require(env.resourcesUrl+'/gif/synthesis_animation.png')
 export default {
 	components: { NavigationBar, clause },
@@ -77,21 +85,55 @@ export default {
 			isSetp2: false,
 			isSetp3: false,
 			isSetp4: false,
-			showBtn: false
+			showBtn: false,
+			imgtitle: `${env.resourcesUrl}/zh-CN/img_title.png`,
+			noFirst: false
 		};
 	},
 	computed: {
 		bgImg() {
-			return `${this.env.resourcesUrl}/${this.lang}/background.png`
+			return `${this.env.resourcesUrl}/${this.lang}/background.png`;
 		}
 	},
 	onLoad(query) {
+		this.noFirst = uni.getStorageSync("IsFirst") === "No";
 		console.log(query);
 		console.log(this.$globalData);
+		wx.cloud.init();
+		wx.cloud.callFunction({
+			name: "getOpenId",
+			complete: res => {
+				console.log(res);
+				//你想要完成的功能，比如存储openid到全局
+				this.$globalData.openid = res.result.openid;
+			}
+		});
 	},
 	methods: {
+		getUserProfile (e) {
+			wx.getUserProfile({
+				desc: "获取您的微信个人信息",
+				success: res => {
+					console.log(res.userInfo);
+					var app = getApp();
+					app.globalData.userInfo = res.userInfo; // 将用户信息存到globalData里面
+				},
+				fail: function(e) {
+					wx.showToast({
+						title: "你选择了取消",
+						icon: "none",
+						duration: 1500,
+						mask: true
+					});
+				}
+			});
+		},
 		start() {
-			if (this.isAgree) {
+			if (this.noFirst) {
+				this.goPlay();
+				return;
+			}
+			if (this.isAgree && !this.noFirst) {
 				this.goPlayShow = true;
 				setTimeout(() => {
 					this.isSetp2 = true;
@@ -104,17 +146,24 @@ export default {
 							}, 1000);
 						}, 1000);
 					}, 1000);
-				},1000)
+				}, 1000);
 			} else {
 				uni.showToast({
-					title: '请勾选知情同意书~',
-					icon: 'none'
-				})
+					title: "请勾选知情同意书~",
+					icon: "none"
+				});
 			}
 		},
 		goPlay() {
+			uni.setStorage({
+				key: "IsFirst",
+				data: "No",
+				success: function() {
+					console.log("success");
+				}
+			});
 			uni.redirectTo({
-				url: '/pages/game/index'
+				url: "/pages/game/index"
 			});
 		},
 		onLangChange(lang) {
@@ -134,26 +183,26 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import url('../../animation.css');
+@import url("../../animation.css");
 .zh-CN {
 	$lang: "/zh-CN/";
 	.bg {
-		background-image: url($IMG_URL+$lang+"background.png");
+		// background-image: url($IMG_URL+$lang+"background.png");
 	}
 	.wanfa-title-header {
-		background-image: url($IMG_URL+$lang+'game_title.png');
+		background-image: url($IMG_URL+$lang+"game_title.png");
 	}
 	.setp1 {
-		background-image: url($IMG_URL+$lang+'step_a.png');
+		background-image: url($IMG_URL+$lang+"step_a.png");
 	}
 	.setp2 {
-		background-image: url($IMG_URL+$lang+'step_b.png');
+		background-image: url($IMG_URL+$lang+"step_b.png");
 	}
 	.setp3 {
-		background-image: url($IMG_URL+$lang+'step_c.png');
+		background-image: url($IMG_URL+$lang+"step_c.png");
 	}
 	.setp4 {
-		background-image: url($IMG_URL+$lang+'step_d.png');
+		background-image: url($IMG_URL+$lang+"step_d.png");
 	}
 }
 .zh-HK {
@@ -172,7 +221,7 @@ export default {
 	position: relative;
 	width: 100vw;
 	min-height: 100vh;
-	background: -webkit-linear-gradient(300.46deg, #f3c588 0%, #d9a36e 100%);
+	background: linear-gradient(90deg, #f9ecb4 0%, #f3c186 35%, #da9e6b 100%);
 	.lang-bar {
 		position: absolute;
 		bottom: 10rpx;
@@ -196,21 +245,36 @@ export default {
 		justify-content: center;
 		align-items: center;
 		z-index: 10;
+		.product {
+			position: absolute;
+			top: -9vh;
+			color: #fff;
+			font-size: 36rpx;
+		}
+		.product1 {
+			position: absolute;
+			top: -36vh;
+			right: 3vw;
+			color: #fff;
+			font-size: 24rpx;
+		}
 		.start-game-btn {
 			padding: 0;
 			width: 368rpx;
 			height: 96rpx;
 			border: none;
-			background: -webkit-linear-gradient(300.46deg, #d9a36e 0%, #f3c588 100%);
+			// background: -webkit-linear-gradient(300.46deg, #d9a36e 0%, #f3c588 100%);
 			color: $uni-text-color;
 			font-size: 32rpx;
 			line-height: 96rpx;
 			border-radius: 0;
+			background-image: url($IMG_URL+"/gif/Button.gif");
+			background-size: 100% 100%;
 		}
 		.press-style {
 			box-shadow: 0 0 16rpx rgba(195, 228, 212, 0.767);
 		}
-		
+
 		.agreement-row {
 			line-height: 0;
 			margin-top: 48rpx;
@@ -228,13 +292,31 @@ export default {
 				line-height: 32rpx;
 			}
 		}
+		.btn-group {
+			margin-top: 30rpx;
+			width: 368rpx;
+			display: flex;
+			justify-content: space-between;
+			color: #fff;
+			font-size: 24rpx;
+			.item {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+			}
+			image {
+				margin-bottom: 10rpx;
+				width: 44rpx;
+				height: 44rpx;
+			}
+		}
 		.ps {
 			margin-top: 20rpx;
 			color: $uni-text-color;
 			font-size: 18rpx;
 		}
 	}
-	
+
 	.clause-container {
 		padding-top: 12vh;
 		position: fixed;
@@ -251,15 +333,23 @@ export default {
 		left: 0;
 		width: 100%;
 		height: 100%;
-		background-size: 100% 100%;
-		// background-repeat: repeat;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 		z-index: 1;
-		image {
-			width: 100vw;
-			height: 100vh;
+		.img-title {
+			position: absolute;
+			top: 12vh;
+			width: 50vw;
+			z-index: 99;
+		}
+		.shouye-gif {
+			width: 100%;
+			position: absolute;
+			top: 25vh;
 		}
 	}
-	
+
 	.wanwa {
 		width: 100vw;
 		height: 100vh;
@@ -336,10 +426,10 @@ export default {
 					right: -150rpx;
 					width: 200rpx;
 					height: 100rpx;
-					background-image: url('../../static/arrow_a.png');
+					background-image: url("../../static/arrow_a.png");
 				}
 			}
-			.setp2{
+			.setp2 {
 				position: relative;
 				top: 80rpx;
 				animation-name: example1;
@@ -352,7 +442,7 @@ export default {
 					right: 100rpx;
 					width: 60rpx;
 					height: 240rpx;
-					background-image: url('../../static/arrow_b.png');
+					background-image: url("../../static/arrow_b.png");
 				}
 			}
 			.setp3-a {
@@ -362,9 +452,9 @@ export default {
 				top: 50rpx;
 				width: 100rpx;
 				height: 200rpx;
-				background-image: url('../../static/arrow_c.png');
+				background-image: url("../../static/arrow_c.png");
 			}
-			.setp3{
+			.setp3 {
 				animation-name: example1;
 				animation-duration: 2s;
 				width: 14vh;
