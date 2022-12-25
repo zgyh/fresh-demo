@@ -6,9 +6,7 @@
 				<image :src="productImg"></image>
 				<view class="progress-text">{{`进度${rate}%`}}</view>
 			</view>
-			
 		</view>
-		
 	</view>
 </template>
 

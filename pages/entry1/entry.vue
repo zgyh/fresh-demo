@@ -2,7 +2,17 @@
 	<view class="content" :class="lang">
 		<view class="bg">
 			<image class="img-title" :src="imgtitle" mode="widthFix"></image>
-			<image class="shouye-gif" :src="`${env.resourcesUrl}/gif/shouye.gif`" mode="widthFix"></image>
+			<image v-show="showShouYeGif" @load="shouyeGifLoad" class="shouye-gif" :src="`${env.resourcesUrl}/zh-CN/home.gif`" mode="widthFix"></image>
+		</view>
+		<view v-if="!showShouYeGif" class="loadding">
+			<view class="progress">
+				<view class="rate" :style="{ width: rate === 0 ? rate + '16px' : rate + '%' }">
+					<view class="icon_speed"></view>
+					<view class="nums">
+						<view class="progress-text">{{`进度${rate}%`}}</view>
+					</view>
+				</view>
+			</view>
 		</view>
 		<view class="wanwa" v-if="goPlayShow">
 			<view class="wanfa-title">
@@ -55,7 +65,7 @@
 					<view>登记成为体验官</view>
 				</view>
 				<view class="item">
-					<image src="../../static/icon_ buy.png"></image>
+					<image src="../../static/icon_buy.png"></image>
 					<view>点击购买</view>
 				</view>
 			</view>
@@ -71,7 +81,6 @@
 import { env, langBtns } from "../../difine.js";
 import NavigationBar from "../../component/navigation-bar.vue";
 import clause from "../../component/clause.vue";
-// const vas = require(env.resourcesUrl+'/gif/synthesis_animation.png')
 export default {
 	components: { NavigationBar, clause },
 	data() {
@@ -87,7 +96,9 @@ export default {
 			isSetp4: false,
 			showBtn: false,
 			imgtitle: `${env.resourcesUrl}/zh-CN/img_title.png`,
-			noFirst: false
+			noFirst: false,
+			showShouYeGif: false,
+			rate: 0
 		};
 	},
 	computed: {
@@ -96,6 +107,13 @@ export default {
 		}
 	},
 	onLoad(query) {
+		let interval = setInterval(() => {
+			if(this.rate === 100) {
+				clearInterval(interval)
+				return;
+			}
+			this.rate += 1;
+		}, 30);
 		this.noFirst = uni.getStorageSync("IsFirst") === "No";
 		console.log(query);
 		console.log(this.$globalData);
@@ -110,23 +128,8 @@ export default {
 		});
 	},
 	methods: {
-		getUserProfile (e) {
-			wx.getUserProfile({
-				desc: "获取您的微信个人信息",
-				success: res => {
-					console.log(res.userInfo);
-					var app = getApp();
-					app.globalData.userInfo = res.userInfo; // 将用户信息存到globalData里面
-				},
-				fail: function(e) {
-					wx.showToast({
-						title: "你选择了取消",
-						icon: "none",
-						duration: 1500,
-						mask: true
-					});
-				}
-			});
+		shouyeGifLoad(e) {
+			this.showShouYeGif = true;
 		},
 		start() {
 			if (this.noFirst) {
@@ -155,6 +158,7 @@ export default {
 			}
 		},
 		goPlay() {
+			this.goPlayShow = false;
 			uni.setStorage({
 				key: "IsFirst",
 				data: "No",
@@ -162,7 +166,7 @@ export default {
 					console.log("success");
 				}
 			});
-			uni.redirectTo({
+			uni.navigateTo({
 				url: "/pages/game/index"
 			});
 		},
@@ -247,14 +251,14 @@ export default {
 		z-index: 10;
 		.product {
 			position: absolute;
-			top: -9vh;
+			top: -29vw;
 			color: #fff;
-			font-size: 36rpx;
+			font-size: 28rpx;
 		}
 		.product1 {
 			position: absolute;
-			top: -36vh;
-			right: 3vw;
+			top: -46vh;
+			right: 13vw;
 			color: #fff;
 			font-size: 24rpx;
 		}
@@ -297,7 +301,7 @@ export default {
 			width: 368rpx;
 			display: flex;
 			justify-content: space-between;
-			color: #fff;
+			color: #5D3810;
 			font-size: 24rpx;
 			.item {
 				display: flex;
@@ -346,7 +350,68 @@ export default {
 		.shouye-gif {
 			width: 100%;
 			position: absolute;
-			top: 25vh;
+			top: 22vh;
+		}
+	}
+	.loadding {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100vh;
+		background-image: url('../../static/title_loading.png');
+		background-position: center;
+		background-repeat: no-repeat;
+		background-size: 50%;
+		z-index: 9999;
+		background-color: rgba(0, 0, 0, 0.75);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		.progress {
+			position: relative;
+			top: -20vw;
+			width: 70%;
+			height: 12px;
+			border-radius: 6px;
+			position: relative;
+			border: 1rpx solid #fff;
+			background-color: #fff;
+		}
+		
+		.rate {
+			position: absolute;
+			left: 0;
+			top: 0;
+			background: -webkit-linear-gradient(72.31deg, #ffe2a1 0%, #e8bb68 100%);
+			height: 12px;
+			border-radius: 6px;
+			transition:width 0.35s;
+		}
+		
+		.icon_speed {
+			position: absolute;
+			right: 0;
+			top: -2px;
+			width: 16px;
+			height: 16px;
+			background-image: url('../../static/icon_speed.of.progress.png');
+			background-size: 100% 100%;
+		}
+		
+		.nums {
+			width: 100rpx;
+			position: absolute;
+			right: -36rpx;
+			top: 42rpx;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		
+		.progress-text {
+			font-size: 24rpx;
+			color: #FFF;
 		}
 	}
 

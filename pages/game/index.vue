@@ -3,9 +3,9 @@
 		<view v-if="showMask" class="mask-again"> 
 			<button class="again-btn" @click="onAgain()">再试一次</button>
 		</view>
-		<view class="mask-pass" v-if="passMask">
+		<view class="mask-pass" v-show="passMask">
 			<view class="pass-content">
-				<image class="guangsu" mode="widthFix" :src="`${env.resourcesUrl}/zh-CN/synthesis_animation.gif`"></image>
+				<image class="guangsu" mode="widthFix" :src="`${env.resourcesUrl}/zh-CN/synthesis.gif`"></image>
 				<!-- <image class="product" mode="widthFix" :src="`${env.resourcesUrl}/zh-CN/product.img_fresh_b.png`"></image> -->
 				<!-- <image class="lizi" mode="widthFix" :src="`${env.resourcesUrl}/gif/lizi.gif`"></image> -->
 			</view>
@@ -51,8 +51,8 @@ const top = uni.getSystemInfoSync().windowHeight * 0.23;
 const H = uni.getSystemInfoSync().windowHeight - top;
 const dpr = wx.getSystemInfoSync().pixelRatio;
 
-const PZW = 45.3 * dpr;
-const PZH = 38.6 * dpr;
+const PZW = 40.3 * dpr;
+const PZH = 33.6 * dpr;
 const x = W / 2 - PZW / 2;
 const y = H - PZH - 34;
 const pingzi = {
@@ -247,7 +247,7 @@ export default {
 			let categorize = null;
 			let msg = ''
 			setTimeout(function calle() {
-				categorize = that.createCategorize(rand(40, W - 75), 0, 40, 40, that.images[rand(0,10)]);
+				categorize = that.createCategorize(rand(40, W - 75), 0, that.images[rand(0,10)]);
 				categorizes.push(categorize);
 				elementGenretor = setTimeout(calle, INTERVAL_TIME)
 			}, 0);
@@ -284,7 +284,7 @@ export default {
 					if (e.image.valid) {
 						msg = '+'+e.image.text;
 					} else {
-						msg = '+伤害皮肤因子'
+						msg = '-伤害皮肤因子'
 					}
 					
 					ctx.fillText(msg, pingzi.x + PZW / 2, pingzi.y - 5 - 20 * i);
@@ -345,20 +345,20 @@ export default {
 				canvasInfo.status = StatusDefine.IDLE;
 			}
 		},
-		createCategorize(x, y, width, height, image) {
+		createCategorize(x, y, image) {
 			const that = this;
-			function Categorize(x, y, width, height, image) {
+			function Categorize(x, y, image) {
 				this.id = XE_ID++;
 				this.x = x;
 				this.y = y;
-				this.width = rand(13.3, 25) * dpr;
+				this.width = rand(13.3, 20) * dpr;
 				this.height = this.width;
 				this.image = image;
 				this.textAlpha = 1;
 			}
 
 			Categorize.prototype.update = function() {
-				this.y += 1 * dpr;
+				this.y += 1.2 * dpr;
 				let xfanweinei = false;
 				if (pingzi.x - this.x === 0) {
 					xfanweinei = true;
@@ -373,6 +373,9 @@ export default {
 				}
 				if (xfanweinei && (this.y - pingzi.y) > 0 && (this.y - pingzi.y) < 5) {
 					pzList.push(this);
+					if(!this.image.valid) {
+						that.$refs.countDownor.downnOneSecond();
+					}
 					if(this.image.valid && that.rate < 100) {
 						that.rate1 += 100 / 12;
 						that.rate = Math.round(that.rate1);
@@ -402,7 +405,7 @@ export default {
 				ctx.drawImage(this.image.img, this.x, this.y, this.width, this.height);
 			};
 
-			return new Categorize(x, y, width, height, image);
+			return new Categorize(x, y, image);
 		},
 		onCountDownStop() {
 			console.log('--------onCountDownStop');
@@ -520,9 +523,11 @@ export default {
 		.pass-content {
 			position: relative;
 			width: 100%;
+			height: 100%;
+			display: flex;
+			align-items: center;
 			.guangsu {
 				width: 100%;
-				height: auto;
 			}
 			.product {
 				position: absolute;

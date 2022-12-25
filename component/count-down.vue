@@ -48,6 +48,9 @@
 				this.lh = '88rpx';
 				this.img = img;
 				this.startDown();
+			},
+			downnOneSecond() {
+				this.second -= 1;
 			}
 		}
 	}
