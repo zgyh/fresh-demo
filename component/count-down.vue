@@ -50,6 +50,10 @@
 				this.startDown();
 			},
 			downnOneSecond() {
+				this.img = img1;
+				setTimeout(() => {
+					this.img = img;
+				},500)
 				this.second -= 1;
 			}
 		}

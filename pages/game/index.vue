@@ -5,16 +5,16 @@
 		</view>
 		<view class="mask-pass" v-show="passMask">
 			<view class="pass-content">
-				<image class="guangsu" mode="widthFix" :src="`${env.resourcesUrl}/zh-CN/synthesis.gif`"></image>
+				<image class="guangsu" :src="`${env.resourcesUrl}/zh-CN/synthesis_a.gif`"></image>
 				<!-- <image class="product" mode="widthFix" :src="`${env.resourcesUrl}/zh-CN/product.img_fresh_b.png`"></image> -->
 				<!-- <image class="lizi" mode="widthFix" :src="`${env.resourcesUrl}/gif/lizi.gif`"></image> -->
 			</view>
 		</view>
-		<view class="bg"><image :src="bgImg"></image></view>
+		<view class="bg"></view>
 		<view class="container">
 			<view class="header-container">
 				<view>
-					<image class="logo" src="../../static/logo.png"></image>
+					<image class="logo" mode="widthFix" src="../../static/logo.png"></image>
 				</view>
 				<view class="progress">
 					<progress-bar :rate="rate"></progress-bar>
@@ -121,13 +121,20 @@ export default {
 			top,
 			W,
 			H,
-			bgImg: `${env.resourcesUrl}/zh-CN/background_c.png`,
+			bgImg: `${env.resourcesUrl}/zh-CN/game_img.png`,
 			images: [],
 			rate: 0,
 			rate1: 0,
 			showMask: false,
 			passMask: false
 		};
+	},
+	onShow() {
+		this.startGame();
+	},
+	onHide() {
+		clearTimeout(elementGenretor);
+		canvas.cancelAnimationFrame(reqId);
 	},
 	onLoad() {
 		const that = this;
@@ -235,8 +242,8 @@ export default {
 			ctx.font = '12px Georgia';
 			ctx.textAlign = "center";
 			ctx.fillStyle = '#fff';
-			ctx.fillText('左 右 移 动 瓶 身 接 住 正 确 的', pingzi.x + PZW / 2, pingzi.y - 5 - 40);
-			ctx.fillText('成 分 气 泡 及 避 开 不 利 因 素', pingzi.x + PZW / 2, pingzi.y - 5 - 20);
+			ctx.fillText('左 右 移 动 瓶 身', pingzi.x + PZW / 2, pingzi.y - 5 - 40);
+			ctx.fillText('接 住 正 确 的成 分 气 泡', pingzi.x + PZW / 2, pingzi.y - 5 - 20);
 		},
 		startGame() {
 			setTimeout(() => {
@@ -351,7 +358,7 @@ export default {
 				this.id = XE_ID++;
 				this.x = x;
 				this.y = y;
-				this.width = rand(13.3, 20) * dpr;
+				this.width = 17 * dpr //rand(13.3, 20) * dpr;
 				this.height = this.width;
 				this.image = image;
 				this.textAlpha = 1;
@@ -392,7 +399,7 @@ export default {
 								uni.redirectTo({
 									url: '/pages/detail/detail'
 								})
-							},3500);
+							},5000);
 						}, 200);
 						
 					}
@@ -432,21 +439,22 @@ export default {
 };
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .content {
 	position: relative;
 	width: 100vw;
 	height: 100vh;
+	background: linear-gradient(90deg, #f9ecb4 0%, #f3c186 35%, #da9e6b 100%);
 	.bg {
 		position: fixed;
 		top: 0;
 		left: 0;
 		height: 100vh;
 		width: 100%;
-		image {
-			height: 100vh;
-			width: 100%;
-		}
+		background-image: url($IMG_URL+'/zh-CN/game_img.png');
+		background-position: bottom;
+		background-repeat: no-repeat;
+		background-size: contain;
 	}
 	.container {
 		position: relative;
@@ -464,9 +472,7 @@ export default {
 			box-sizing: border-box;
 			justify-content: space-between;
 			.logo {
-				width: 300rpx;
-				height: 124rpx;
-				
+				width: 200rpx;
 			}
 			.progress {
 				width: 80%;
@@ -524,10 +530,9 @@ export default {
 			position: relative;
 			width: 100%;
 			height: 100%;
-			display: flex;
-			align-items: center;
 			.guangsu {
 				width: 100%;
+				height: 100%;
 			}
 			.product {
 				position: absolute;

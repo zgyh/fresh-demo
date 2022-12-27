@@ -1,22 +1,12 @@
 <template>
 	<view class="detail">
 		<view class="header-container">
-			<!-- <view>
-				<image class="logo" src="../../static/logo.png"></image>
-			</view>
-		 <view class="kanglao">28天抗老见证</view>
-		 <view class="mianshui">
-			  <text>-</text>
-			  <text>免税专享</text>
-			  <text>体验官招募</text>
-			  <text>-</text>
-		  </view> -->
 			<image
 				class="logg"
 				:src="`${env.resourcesUrl}/zh-CN/img_title_2.png`"
 				mode="widthFix"
 			></image>
-			<image class="buy" src="../../static/icon_ float_buy.png" mode="widthFix"></image>
+			<image @click="goMain()" class="buy" src="../../static/icon_float_buy.png" mode="widthFix"></image>
 		</view>
 		<view class="page">
 			<view class="item1">
@@ -46,11 +36,12 @@
 		</view>
 		<view style="font-size: 0;">
 			<video
-			 style="width: 100%; height: 240px;"
+				style="width: 100%; height: 240px;"
 				src="https://wanzhuan-activity.oss-cn-hangzhou.aliyuncs.com/assets/zh-CN/fresh_detailA.mp4"
 				:controls="false"
 				autoplay
 				loop
+				object-fit="cover"
 			></video>
 		</view>
 		<view class="item">
@@ -58,11 +49,12 @@
 		</view>
 		<view style="font-size: 0;">
 			<video
-			 style="width: 100%; height: 240px;"
+				style="width: 100%; height: 240px;"
 				src="https://wanzhuan-activity.oss-cn-hangzhou.aliyuncs.com/assets/zh-CN/fresh_detailB.mp4"
 				:controls="false"
 				autoplay
 				loop
+				object-fit="cover"
 			></video>
 		</view>
 		<view class="item">
@@ -81,8 +73,8 @@
 						<swiper-item>
 							<view class="swiper-item">
 								<view class="item-content">
-									<view class="btn" @click="toDetailPage()"></view>
-									<view class="btn1">立即购买</view>
+									<view class="btn" @click="toDetailPage(index)"></view>
+									<view class="btn1" @click="toDetailPage(index)">立即购买</view>
 									<image mode="widthFix" :src="`${env.resourcesUrl}/zh-CN/${item}.png`"></image>
 								</view>
 							</view>
@@ -155,15 +147,37 @@ export default {
 		onChange(e) {
 			this.current = e.detail.current;
 		},
-		toDetailPage() {
+		goMain() {
 			wx.navigateToMiniProgram({
 				appId: "wxd8df280e2b1b5d13",
-				path: "pages/home/index?routerParamsStorageKey=home1671968304567&__key_=16719679642629",
+				path: 'pages/home/index?weappShareInfo=/tabs/categoryBrand/freshIndex?zmsySubsiteId=1',
 				success(res) {
 					console.info(res);
 					// 打开成功
 				}
 			});
+		},
+		toDetailPage(i) {
+			let arr = [
+				"pages/home/index?weappShareInfo=/tabs/index/productInfo&productId=550253&goodsId=671046",
+				"pages/home/index?weappShareInfo=/tabs/index/productInfo&productId=401293&goodsId=525465",
+				"pages/home/index?weappShareInfo=/tabs/index/productInfo&productId=601460&goodsId=722255",
+				"pages/home/index?weappShareInfo=/tabs/index/productInfo&productId=467991&goodsId=592583",
+				"pages/home/index?weappShareInfo=/tabs/categoryBrand/freshIndex?zmsySubsiteId=1",
+				'pages/home/index?weappShareInfo=/tabs/index/productInfo&productId=288511&goodsId=517824',
+				"pages/home/index?weappShareInfo=/tabs/index/productInfo&productId=287240&goodsId=516996"
+			];
+			if(arr[i]) {
+				wx.navigateToMiniProgram({
+					appId: "wxd8df280e2b1b5d13",
+					path: arr[i],
+					success(res) {
+						console.info(res);
+						// 打开成功
+					}
+				});
+			}
+		
 		}
 	}
 };
@@ -184,7 +198,7 @@ export default {
 		justify-content: space-between;
 		z-index: 1;
 		.logg {
-			width: 60vw;
+			width: 80vw;
 		}
 		.buy {
 			position: absolute;
@@ -302,7 +316,7 @@ export default {
 	.item1 {
 		width: 100%;
 		position: absolute;
-		top: 26vh;
+		top: 32vh;
 
 		image {
 			width: 100%;

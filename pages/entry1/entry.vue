@@ -2,17 +2,12 @@
 	<view class="content" :class="lang">
 		<view class="bg">
 			<image class="img-title" :src="imgtitle" mode="widthFix"></image>
-			<image v-show="showShouYeGif" @load="shouyeGifLoad" class="shouye-gif" :src="`${env.resourcesUrl}/zh-CN/home.gif`" mode="widthFix"></image>
+			<image v-show="showShouYeGif && (rate >= 100)" @load="shouyeGifLoad" class="shouye-gif" :src="`${env.resourcesUrl}/zh-CN/home_a.gif`" mode="widthFix"></image>
 		</view>
-		<view v-if="!showShouYeGif" class="loadding">
-			<view class="progress">
-				<view class="rate" :style="{ width: rate === 0 ? rate + '16px' : rate + '%' }">
-					<view class="icon_speed"></view>
-					<view class="nums">
-						<view class="progress-text">{{`进度${rate}%`}}</view>
-					</view>
-				</view>
-			</view>
+		<view v-if="rate < 100" class="loadding">
+			<view class="ai-progress">
+				<ai-progress :duration="100" :percentage="rate" :stroke-width="20" :bg-color="'-webkit-linear-gradient(72.31deg, #ffe2a1 0%, #e8bb68 100%)'"></ai-progress>
+			</view>	
 		</view>
 		<view class="wanwa" v-if="goPlayShow">
 			<view class="wanfa-title">
@@ -47,45 +42,47 @@
 		</navigation-bar>
 
 		<view class="footer-container">
-			<view class="product">红茶凝时焕活面霜</view>
-			<view class="product1">全新上市!</view>
+			<view class="product">{{i18n[lang].home.productName}}</view>
+			<view class="product1">{{i18n[lang].home.productSubTitle}}</view>
 			<button class="start-game-btn" hover-class="press-style" open-type="getUserInfo" @click="start()">
-				探 秘 赢 好 礼
+				{{i18n[lang].home.buttonName}}
 			</button>
 			<view v-if="!noFirst" class="agreement-row">
 				<view @click="onAgreementChange()">
 					<image class="icon-agreement" v-show="!isAgree" src="../../static/choice_b.png"></image>
 					<image class="icon-agreement" v-show="isAgree" src="../../static/choice_a.png"></image>
 				</view>
-				<text class="txt" @click="onAgreement()">授权同意隐私协议与用户手册</text>
+				<text class="txt" @click="onAgreement()">{{i18n[lang].home.agreement}}</text>
 			</view>
 			<view class="btn-group" v-else>
 				<view class="item">
 					<image src="../../static/icon_register.png"></image>
-					<view>登记成为体验官</view>
+					<view>{{i18n[lang].home.tabbar1}}</view>
 				</view>
 				<view class="item">
 					<image src="../../static/icon_buy.png"></image>
-					<view>点击购买</view>
+					<view>{{i18n[lang].home.tabbar2}}</view>
 				</view>
 			</view>
-			<view class="ps">*源自第三方实验室数据，经检测产品不含视黄醇</view>
+			<view class="ps">{{i18n[lang].home.ps}}</view>
 		</view>
 		<view v-show="confirmedOpen" class="clause-container">
-			<clause @confirm="onConfirm()"></clause>
+			<clause :lang="lang" @confirm="onConfirm()"></clause>
 		</view>
 	</view>
 </template>
 
 <script>
-import { env, langBtns } from "../../difine.js";
+import { env, langBtns, i18n } from "../../difine.js";
 import NavigationBar from "../../component/navigation-bar.vue";
+import AiProgress from "../../components/ai-progress/ai-progress.vue"
 import clause from "../../component/clause.vue";
 export default {
-	components: { NavigationBar, clause },
+	components: { NavigationBar, clause, AiProgress },
 	data() {
 		return {
 			env,
+			i18n,
 			langBtns,
 			lang: langBtns[1].value,
 			isAgree: false,
@@ -95,25 +92,27 @@ export default {
 			isSetp3: false,
 			isSetp4: false,
 			showBtn: false,
-			imgtitle: `${env.resourcesUrl}/zh-CN/img_title.png`,
 			noFirst: false,
 			showShouYeGif: false,
 			rate: 0
 		};
 	},
 	computed: {
-		bgImg() {
-			return `${this.env.resourcesUrl}/${this.lang}/background.png`;
+		imgtitle() {
+			return `${env.resourcesUrl}/${this.lang}/img_title.png`;
 		}
 	},
 	onLoad(query) {
-		let interval = setInterval(() => {
-			if(this.rate === 100) {
-				clearInterval(interval)
+		let that = this;
+		let timeout = null;
+		setTimeout(function calle() {
+			that.rate += 2;
+			if(that.rate === 100) {
+				clearTimeout(timeout);
 				return;
 			}
-			this.rate += 1;
-		}, 30);
+			timeout = setTimeout(calle, 60);
+		},0)
 		this.noFirst = uni.getStorageSync("IsFirst") === "No";
 		console.log(query);
 		console.log(this.$globalData);
@@ -121,7 +120,6 @@ export default {
 		wx.cloud.callFunction({
 			name: "getOpenId",
 			complete: res => {
-				console.log(res);
 				//你想要完成的功能，比如存储openid到全局
 				this.$globalData.openid = res.result.openid;
 			}
@@ -190,9 +188,7 @@ export default {
 @import url("../../animation.css");
 .zh-CN {
 	$lang: "/zh-CN/";
-	.bg {
-		// background-image: url($IMG_URL+$lang+"background.png");
-	}
+	.bg {}
 	.wanfa-title-header {
 		background-image: url($IMG_URL+$lang+"game_title.png");
 	}
@@ -212,13 +208,11 @@ export default {
 .zh-HK {
 	$lang: "/zh-HK/";
 	.bg {
-		background-image: url($IMG_URL+$lang+"background_f.png");
 	}
 }
 .en-US {
 	$lang: "/en-US/";
 	.bg {
-		background-image: url($IMG_URL+$lang+"background_en.png");
 	}
 }
 .content {
@@ -251,7 +245,7 @@ export default {
 		z-index: 10;
 		.product {
 			position: absolute;
-			top: -29vw;
+			top: -23vw;
 			color: #fff;
 			font-size: 28rpx;
 		}
@@ -368,10 +362,15 @@ export default {
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		.ai-progress {
+			position: relative;
+			top: -20vw;
+			width: 500rpx;
+		}
 		.progress {
 			position: relative;
 			top: -20vw;
-			width: 70%;
+			width: 400rpx;
 			height: 12px;
 			border-radius: 6px;
 			position: relative;
