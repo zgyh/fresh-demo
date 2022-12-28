@@ -7,7 +7,8 @@ Vue.prototype.$globalData = {
 	navBarHeight: 0,
 	menuRight: 0,
 	menuTop: 0,
-	menuHeight: 0
+	menuHeight: 0,
+	lang: 'zh-CN'
 }
 App.mpType = 'app'
 const app = new Vue({

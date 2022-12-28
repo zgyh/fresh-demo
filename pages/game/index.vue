@@ -1,7 +1,7 @@
 <template>
 	<view class="content">
 		<view v-if="showMask" class="mask-again"> 
-			<button class="again-btn" @click="onAgain()">再试一次</button>
+			<button class="again-btn" @click="onAgain()">{{ again }}</button>
 		</view>
 		<view class="mask-pass" v-show="passMask">
 			<view class="pass-content">
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { env } from "../../difine.js"
+import { env, i18n } from "../../difine.js"
 import progressBar from "../../component/progress.vue";
 import countDown from "../../component/count-down.vue";
 import { rand, queryPtInPolygon, getDistance } from "../../util.js";
@@ -126,17 +126,24 @@ export default {
 			rate: 0,
 			rate1: 0,
 			showMask: false,
-			passMask: false
+			passMask: false,
+			lang: '',
+			again: ''
 		};
 	},
 	onShow() {
-		this.startGame();
+		if(this.pageHide) {
+			this.startGame();
+		}
 	},
 	onHide() {
 		clearTimeout(elementGenretor);
 		canvas.cancelAnimationFrame(reqId);
+		this.pageHide = true;
 	},
 	onLoad() {
+		this.lang = this.$globalData.lang;
+		this.again = i18n[this.lang].game.again;
 		const that = this;
 		const query = uni.createSelectorQuery();
 		query
@@ -155,42 +162,42 @@ export default {
 					{
 						valid: true,
 						img: './../../static/icon_component_hong.png',
-						text: '红茶立体抗衰老成分'
+						text: i18n[this.lang].game.hclt
 					},
 					{
 						valid: true,
 						img: './../../static/icon_component_jiao.png',
-						text: '角鲨烷'
+						text: i18n[this.lang].game.jsw
 					},
 					{
 						valid: true,
 						img: './../../static/icon_component_shen.png',
-						text: '神经酰胺'
+						text: i18n[this.lang].game.sjxa
 					},
 					{
 						valid: true,
 						img: './../../static/icon_component_yan.png',
-						text: '艳山姜'
+						text: i18n[this.lang].game.ysj
 					},
 					{
 						valid: true,
 						img: './../../static/icon_component_hong.png',
-						text: '红茶立体抗衰老成分'
+						text: i18n[this.lang].game.hclt
 					},
 					{
 						valid: true,
 						img: './../../static/icon_component_jiao.png',
-						text: '角鲨烷'
+						text: i18n[this.lang].game.jsw
 					},
 					{
 						valid: true,
 						img: './../../static/icon_component_shen.png',
-						text: '神经酰胺'
+						text: i18n[this.lang].game.sjxa
 					},
 					{
 						valid: true,
 						img: './../../static/icon_component_yan.png',
-						text: '艳山姜'
+						text: i18n[this.lang].game.ysj
 					},
 					{
 						valid: false,
@@ -242,8 +249,8 @@ export default {
 			ctx.font = '12px Georgia';
 			ctx.textAlign = "center";
 			ctx.fillStyle = '#fff';
-			ctx.fillText('左 右 移 动 瓶 身', pingzi.x + PZW / 2, pingzi.y - 5 - 40);
-			ctx.fillText('接 住 正 确 的成 分 气 泡', pingzi.x + PZW / 2, pingzi.y - 5 - 20);
+			ctx.fillText(i18n[this.lang].game.tips1, pingzi.x + PZW / 2, pingzi.y - 5 - 40);
+			ctx.fillText(i18n[this.lang].game.tips2, pingzi.x + PZW / 2, pingzi.y - 5 - 20);
 		},
 		startGame() {
 			setTimeout(() => {
@@ -291,7 +298,7 @@ export default {
 					if (e.image.valid) {
 						msg = '+'+e.image.text;
 					} else {
-						msg = '-伤害皮肤因子'
+						msg = i18n[this.lang].game.shanghai
 					}
 					
 					ctx.fillText(msg, pingzi.x + PZW / 2, pingzi.y - 5 - 20 * i);
@@ -399,7 +406,7 @@ export default {
 								uni.redirectTo({
 									url: '/pages/detail/detail'
 								})
-							},5000);
+							},3000);
 						}, 200);
 						
 					}
@@ -415,7 +422,6 @@ export default {
 			return new Categorize(x, y, image);
 		},
 		onCountDownStop() {
-			console.log('--------onCountDownStop');
 			canvas.cancelAnimationFrame(reqId);
 			clearTimeout(elementGenretor);
 			setTimeout(() => {

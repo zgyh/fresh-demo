@@ -4,14 +4,14 @@
 			<view class="icon_speed"></view>
 			<view class="nums">
 				<image :src="productImg"></image>
-				<view class="progress-text">{{`进度${rate}%`}}</view>
+				<view class="progress-text">{{`${text}${rate}%`}}</view>
 			</view>
 		</view>
 	</view>
 </template>
 
 <script>
-	import { env } from "../difine.js"
+	import { env, i18n } from "../difine.js"
 	export default {
 		props: {
 			rate: {
@@ -20,8 +20,13 @@
 		},
 		data() {
 			return {
-				productImg: `${env.resourcesUrl}/zh-CN/product.img_fresh_b.png`
+				productImg: `${env.resourcesUrl}/zh-CN/product.img_fresh_b.png`,
+				text: ''
 			};
+		},
+		mounted() {
+			let lang = this.$globalData.lang;
+			this.text = i18n[lang].game.progress;
 		}
 	}
 </script>
