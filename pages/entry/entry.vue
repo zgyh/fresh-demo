@@ -50,7 +50,7 @@
 				<text class="txt" @click="onAgreement()">{{i18n[lang].home.agreement}}</text>
 			</view>
 			<view class="btn-group" v-else>
-				<view class="item">
+				<view class="item" @click="dengji">
 					<image src="../../static/icon_register.png"></image>
 					<view>{{i18n[lang].home.tabbar1}}</view>
 				</view>
@@ -100,7 +100,7 @@ export default {
 		}
 	},
 	onLoad(query) {
-		this.$globalData.channel = query.channel;
+		this.$globalData.channel = query.channel || 'CDFG';
 		this.$globalData.lang = this.lang;
 		this.entryTime = formatDate(new Date(), "yyyy-MM-dd hh:mm:ss");
 		let that = this;
@@ -199,6 +199,16 @@ export default {
 		onConfirm() {
 			this.confirmedOpen = false;
 		},
+		dengji() {
+			wx.navigateToMiniProgram({
+				appId: "wxd8df280e2b1b5d13",
+				path: 'pages/activity/general/detail/index?id=2&gio_link_id=nPNJbqaP',
+				success(res) {
+					console.info(res);
+					// 打开成功
+				}
+			});
+		},
 		goMain() {
 			wx.navigateToMiniProgram({
 				appId: "wxd8df280e2b1b5d13",
@@ -254,6 +264,11 @@ export default {
 }
 .en-US {
 	$lang: "/en-US/";
+	.bg {
+		.img-title {
+			width: 57vw !important;
+		}
+	}
 	.wanfa-title-header {
 		background-image: url($IMG_URL+$lang+"game_title.png");
 	}
@@ -272,6 +287,12 @@ export default {
 }
 .KR {
 	$lang: "/KR/";
+	.bg {
+		.img-title {
+			width: 57vw !important;
+		}
+	}
+	
 	.wanfa-title-header {
 		background-image: url($IMG_URL+$lang+"game_title.png");
 	}

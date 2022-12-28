@@ -6,7 +6,7 @@
 				:src="`${env.resourcesUrl}/${lang}/img_title_2.png`"
 				mode="widthFix"
 			></image>
-			<image @click="goMain()" class="buy" :src="`${env.resourcesUrl}/${lang}/icon_float.buy.png`" mode="widthFix"></image>
+			<image v-if="lang === 'zh-CN'" @click="goMain()" class="buy" :src="`${env.resourcesUrl}/${lang}/icon_float.buy.png`" mode="widthFix"></image>
 		</view>
 		<view class="page">
 			<view class="item1">
@@ -78,7 +78,7 @@
 							<view class="swiper-item">
 								<view class="item-content">
 									<view class="btn" @click="toDetailPage(index)"></view>
-									<view class="btn1" @click="toDetailPage(index)">立即购买</view>
+									<view v-if="lang === 'zh-CN'" class="btn1" @click="toDetailPage(index)">立即购买</view>
 									<image mode="widthFix" :src="`${env.resourcesUrl}/${lang}/${item}.png`"></image>
 								</view>
 							</view>

@@ -42,7 +42,7 @@
 import { env, i18n } from "../../difine.js"
 import progressBar from "../../component/progress.vue";
 import countDown from "../../component/count-down.vue";
-import { rand, queryPtInPolygon, getDistance } from "../../util.js";
+import { rand, queryPtInPolygon, getDistance, formatDate } from "../../util.js";
 const INTERVAL_TIME = 900;
 let XE_ID = 0;
 
@@ -113,6 +113,8 @@ let reqId = null;
 let ctx = null;
 let leftTipImg = null;
 let rightTipImg = null;
+
+let entryTime = '';
 export default {
 	components: { progressBar, countDown },
 	data() {
@@ -142,6 +144,7 @@ export default {
 		this.pageHide = true;
 	},
 	onLoad() {
+		entryTime = formatDate(new Date(), "yyyy-MM-dd hh:mm:ss");
 		this.lang = this.$globalData.lang;
 		this.again = i18n[this.lang].game.again;
 		const that = this;
@@ -404,7 +407,21 @@ export default {
 							that.$refs.countDownor.stopDown();
 							setTimeout(() => {
 								uni.redirectTo({
-									url: '/pages/detail/detail'
+									url: '/pages/detail/detail',
+									complete: () => {
+										uni.request({
+											url: env.apiUrl,
+											method: 'POST',
+											data: {
+												"openid": that.$globalData.openid,
+												"source": that.$globalData.channel,
+												"name": "game page",
+												"type": "用户停留",
+												"entryTime": entryTime,
+												"leaveTime": formatDate(new Date(), 'yyyy-MM-dd hh:mm:ss')
+											}
+										})
+									}
 								})
 							},3000);
 						}, 200);
