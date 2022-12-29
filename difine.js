@@ -4,12 +4,12 @@ const environment = {
 		resourcesUrl: 'https://wanzhuan-activity.oss-cn-hangzhou.aliyuncs.com/assets'
 	},
 	'production': {
-		apiUrl: '',
+		apiUrl: 'https://www.xuanzhen-tech.com/api/track',
 		resourcesUrl: 'https://wanzhuan-activity.oss-cn-hangzhou.aliyuncs.com/assets'
 	}
 }
 
-export const env = environment['test'];
+export const env = environment['production'];
 
 export const language = {
 	'zh-CN': 'zh-CN',
@@ -56,7 +56,7 @@ export const i18n = {
 			hclt: '红茶立体抗衰老成分',
 			jsw: '角鲨烷',
 			ysj: '艳山姜',
-			sjxa: '神经酰胺',
+			sjxa: '神经酰胺NP',
 			shanghai: '-伤害皮肤因子'
 		},
 		detail: {
@@ -65,10 +65,11 @@ export const i18n = {
 			haoli1: '请亲临fresh免税店专柜',
 			haoli2: '发掘更多惊喜好礼!*',
 			more: '下滑页面查看产品详情',
-			ps: '*每人只限換領一次，數量有限，送完即止。',
+			ps: '*每人只限换领一次，数量有限，送完即止。只限于Fresh免稅店专柜',
 			btn: '免费申领',
 			back: '返回主页',
-			slide: '左右滑动寻找更多'
+			slide: '左右滑动寻找更多',
+			shop: '立即购买'
 		}
 	},
 	'zh-HK': {
@@ -77,7 +78,7 @@ export const i18n = {
 			productSubTitle: '全新上市!',
 			buttonName: '探秘贏好禮',
 			agreement: '授權同意隱私協定與用戶手冊',
-			ps: '*源自協力廠商實驗室數據，經檢測產品不含視',
+			ps: '*源自協力廠商實驗室數據，經檢測產品不含視黃醇',
 			tabbar1: '登记成为体验官',
 			tabbar2: '瞭解更多',
 			wanfaBtn: '我知道了'
@@ -90,8 +91,8 @@ export const i18n = {
 			hclt: '紅茶立體抗老成分',
 			jsw: '角鯊烷',
 			ysj: '艷山姜',
-			sjxa: '神經醯胺III',
-			shanghai: '-傷害皮膚因數'
+			sjxa: '神經醯胺NP',
+			shanghai: '-傷害皮膚因子'
 		},
 		detail: {
 			productName: '紅茶凝時煥活面霜',
@@ -99,10 +100,11 @@ export const i18n = {
 			haoli1: '請親臨fresh免稅店專櫃',
 			haoli2: '發掘更多驚喜好禮!*',
 			more: '下滑頁面查看產品詳情',
-			ps: '*每人只限換領一次，數量有限，送完即止。',
+			ps: '*每人只限換領一次，數量有限，送完即止。只限於Fresh免稅店專櫃',
 			btn: '免費申領',
 			back: '返回主頁',
-			slide: '左右滑動尋找更多'
+			slide: '左右滑動尋找更多',
+			shop: '立即購買'
 		}
 	},
 	'en-US': {
@@ -111,13 +113,13 @@ export const i18n = {
 			productSubTitle: 'NEW!',
 			buttonName: 'Explore Now',
 			agreement: 'Campaign Terms and Conditions',
-			ps: '*ex vivo studies on BT MatrixTM ingredients; this products does not contain retinol',
+			ps: '*ex vivo studies on BT Matrix™ ingredients; this product does not contain retinol',
 			tabbar1: 'Try It Now',
 			tabbar2: 'Learn more',
 			wanfaBtn: `I'm Ready`
 		},
 		game: {
-			progress: 'process',
+			progress: 'progress',
 			tips1: 'Slide the jar to collect the',
 			tips2: 'ingre dient bubbles',
 			again: 'Try Again',
@@ -136,7 +138,8 @@ export const i18n = {
 			ps: '*While stock lasts, limited to Fresh travel retail counters only',
 			btn: 'Join Now',
 			back: 'Back to Home',
-			slide: 'Slide to discover more'
+			slide: 'Slide to discover more',
+			shop: 'Shop Now'
 		}
 	},
 	'KR': {
@@ -145,7 +148,7 @@ export const i18n = {
 			productSubTitle: '신상품 출시!',
 			buttonName: '시작하기',
 			agreement: '개인정보보호약관 및 사용자 안내문',
-			ps: '* BT MatrixTM 성분 연구에',
+			ps: '* BT MatrixTM 성분 연구에 따르면, 본 제품은 레티놀 성분을 포함하고 있지 않습니다.',
 			tabbar1: '지금 시도',
 			tabbar2: '클릭하여 구매',
 			wanfaBtn: '준비 완료'
@@ -170,7 +173,8 @@ export const i18n = {
 			ps: '*프레쉬 면세점 매장에 한하며, 재고 소진 시 행사가 조기 종료될 수 있습니다.',
 			btn: '자세히 알아보기',
 			back: '홈 페이지로 돌아가기',
-			slide: '자세한 내용을 보려면 슬라이딩'
+			slide: '자세한 내용을 보려면 슬라이딩',
+			shop: '구매하기'
 		}
 	},
 }

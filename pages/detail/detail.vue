@@ -6,11 +6,12 @@
 				:src="`${env.resourcesUrl}/${lang}/img_title_2.png`"
 				mode="widthFix"
 			></image>
-			<image v-if="lang === 'zh-CN'" @click="goMain()" class="buy" :src="`${env.resourcesUrl}/${lang}/icon_float.buy.png`" mode="widthFix"></image>
+			<image v-if="channel === 'CDFG'" @click="goMain()" class="buy" :src="`${env.resourcesUrl}/${lang}/icon_float.buy.png`" mode="widthFix"></image>
 		</view>
 		<view class="page">
 			<view class="item1">
 				<image
+				  v-if="channel !== 'KR'"
 					class="marker_500"
 					:src="`${env.resourcesUrl}/${lang}/icon_corner.marker_500.png`"
 					mode="widthFix"
@@ -20,7 +21,7 @@
 			</view>
 			<view class="footer-container">
 				<view v-if="channel === 'CN' || channel === 'CDFG'  || channel === 'SEA'" class="dengji">
-					<view class="btn">
+					<view class="btn" @click="dengji">
 						<view class="icon"></view>
 						<view class="text">{{i18n[lang].detail.btn}}</view>
 					</view>
@@ -78,7 +79,7 @@
 							<view class="swiper-item">
 								<view class="item-content">
 									<view class="btn" @click="toDetailPage(index)"></view>
-									<view v-if="lang === 'zh-CN'" class="btn1" @click="toDetailPage(index)">立即购买</view>
+									<view v-if="channel === 'CDFG'" class="btn1" @click="toDetailPage(index)">{{i18n[lang].detail.shop}}</view>
 									<image mode="widthFix" :src="`${env.resourcesUrl}/${lang}/${item}.png`"></image>
 								</view>
 							</view>
@@ -154,7 +155,10 @@
 
 <script>
 import { env,i18n } from "../../difine.js";
+import { formatDate } from "../../util.js";
 import swiperDot from "@/component/swiperDot/swiperDot.vue";
+
+let entryTime = '';
 export default {
 	components: { swiperDot },
 	data() {
@@ -177,6 +181,23 @@ export default {
 	},
 	onLoad() {
 		
+	},
+	onShow() {
+		entryTime = formatDate(new Date(), "yyyy-MM-dd hh:mm:ss");
+	},
+	onHide() {
+		uni.request({
+			url: env.apiUrl,
+			method: 'POST',
+			data: {
+				"openid": this.$globalData.openid,
+				"source": this.$globalData.channel,
+				"name": "detail page",
+				"type": "用户停留",
+				"entryTime": entryTime,
+				"leaveTime": formatDate(new Date(), 'yyyy-MM-dd hh:mm:ss')
+			}
+		})
 	},
 	methods: {
 		backHome() {
@@ -216,6 +237,16 @@ export default {
 				});
 			}
 		
+		},
+		dengji() {
+			wx.navigateToMiniProgram({
+				appId: "wx0cd36b7d780d8589",
+				path: 'pages/activity/general/detail/index?id=2&gio_link_id=nPNJbqaP',
+				success(res) {
+					console.info(res);
+					// 打开成功
+				}
+			});
 		}
 	}
 };
@@ -319,6 +350,8 @@ export default {
 			}
 			
 			.haoli {
+				position: relative;
+				top: 3vw;
 				color: #371B00;
 				font-size: 32rpx;
 				text-align: center;

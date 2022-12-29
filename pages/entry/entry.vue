@@ -102,7 +102,6 @@ export default {
 	onLoad(query) {
 		this.$globalData.channel = query.channel || 'CDFG';
 		this.$globalData.lang = this.lang;
-		this.entryTime = formatDate(new Date(), "yyyy-MM-dd hh:mm:ss");
 		let that = this;
 		let timeout = null;
 		setTimeout(function calle() {
@@ -126,8 +125,22 @@ export default {
 			}
 		});
 	},
-	onUnload() {
-		
+	onShow() {
+		this.entryTime = formatDate(new Date(), "yyyy-MM-dd hh:mm:ss");
+	},
+	onHide() {
+		 uni.request({
+		 	url: env.apiUrl,
+		 	method: 'POST',
+		 	data: {
+		 		"openid": this.$globalData.openid,
+		 		"source": this.$globalData.channel,
+		 		"name": "entry page",
+		 		"type": "用户停留",
+		 		"entryTime": this.entryTime,
+		 		"leaveTime": formatDate(new Date(), 'yyyy-MM-dd hh:mm:ss')
+		 	}
+		 })
 	},
 	methods: {
 		shouyeGifLoad(e) {
@@ -171,18 +184,7 @@ export default {
 			uni.navigateTo({
 				url: "/pages/game/index",
 				complete: ()=> {
-					uni.request({
-						url: env.apiUrl,
-						method: 'POST',
-						data: {
-							"openid": this.$globalData.openid,
-							"source": this.$globalData.channel,
-							"name": "entry page",
-							"type": "用户停留",
-							"entryTime": this.entryTime,
-							"leaveTime": formatDate(new Date(), 'yyyy-MM-dd hh:mm:ss')
-						}
-					})
+					
 				}
 			});
 		},
@@ -201,7 +203,7 @@ export default {
 		},
 		dengji() {
 			wx.navigateToMiniProgram({
-				appId: "wxd8df280e2b1b5d13",
+				appId: "wx0cd36b7d780d8589",
 				path: 'pages/activity/general/detail/index?id=2&gio_link_id=nPNJbqaP',
 				success(res) {
 					console.info(res);
@@ -210,6 +212,12 @@ export default {
 			});
 		},
 		goMain() {
+			if(this.$globalData.channel === 'KR' || this.$globalData.channel === 'SEA' || this.$globalData.channel === 'CN') {
+				uni.navigateTo({
+					url: '/pages/detail/detail'
+				})
+				return;
+			}
 			wx.navigateToMiniProgram({
 				appId: "wxd8df280e2b1b5d13",
 				path: 'pages/home/index?weappShareInfo=/tabs/categoryBrand/freshIndex?zmsySubsiteId=1',

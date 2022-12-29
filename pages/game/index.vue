@@ -5,7 +5,7 @@
 		</view>
 		<view class="mask-pass" v-show="passMask">
 			<view class="pass-content">
-				<image class="guangsu" :src="`${env.resourcesUrl}/zh-CN/synthesis_a.gif`"></image>
+				<image class="guangsu" :src="hechengImg"></image>
 				<!-- <image class="product" mode="widthFix" :src="`${env.resourcesUrl}/zh-CN/product.img_fresh_b.png`"></image> -->
 				<!-- <image class="lizi" mode="widthFix" :src="`${env.resourcesUrl}/gif/lizi.gif`"></image> -->
 			</view>
@@ -130,10 +130,12 @@ export default {
 			showMask: false,
 			passMask: false,
 			lang: '',
-			again: ''
+			again: '',
+			hechengImg: ''
 		};
 	},
 	onShow() {
+		entryTime = formatDate(new Date(), "yyyy-MM-dd hh:mm:ss");
 		if(this.pageHide) {
 			this.startGame();
 		}
@@ -142,11 +144,23 @@ export default {
 		clearTimeout(elementGenretor);
 		canvas.cancelAnimationFrame(reqId);
 		this.pageHide = true;
+		uni.request({
+			url: env.apiUrl,
+			method: 'POST',
+			data: {
+				"openid": this.$globalData.openid,
+				"source": this.$globalData.channel,
+				"name": "game page",
+				"type": "用户停留",
+				"entryTime": entryTime,
+				"leaveTime": formatDate(new Date(), 'yyyy-MM-dd hh:mm:ss')
+			}
+		})
 	},
 	onLoad() {
-		entryTime = formatDate(new Date(), "yyyy-MM-dd hh:mm:ss");
 		this.lang = this.$globalData.lang;
 		this.again = i18n[this.lang].game.again;
+		this.hechengImg = `${env.resourcesUrl}/${this.lang}/synthesis_a.gif`
 		const that = this;
 		const query = uni.createSelectorQuery();
 		query
@@ -409,18 +423,7 @@ export default {
 								uni.redirectTo({
 									url: '/pages/detail/detail',
 									complete: () => {
-										uni.request({
-											url: env.apiUrl,
-											method: 'POST',
-											data: {
-												"openid": that.$globalData.openid,
-												"source": that.$globalData.channel,
-												"name": "game page",
-												"type": "用户停留",
-												"entryTime": entryTime,
-												"leaveTime": formatDate(new Date(), 'yyyy-MM-dd hh:mm:ss')
-											}
-										})
+										
 									}
 								})
 							},3000);
