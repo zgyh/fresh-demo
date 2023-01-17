@@ -60,8 +60,8 @@ export const i18n = {
 			shanghai: '-伤害皮肤因子'
 		},
 		detail: {
-			productName: '紅茶凝時煥活面霜',
-			jingxi: '请亲临 免税店专柜领取精美礼品一份!*',
+			productName: '红茶凝时焕活面霜',
+			jingxi: '请亲临fresh免税店专柜领取精美礼品一份!*',
 			haoli1: '请亲临fresh免税店专柜',
 			haoli2: '发掘更多惊喜好礼!*',
 			more: '下滑页面查看产品详情',

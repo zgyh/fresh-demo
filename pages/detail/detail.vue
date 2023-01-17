@@ -2,10 +2,12 @@
 	<view class="detail">
 		<view class="header-container">
 			<image
+				v-if="channel !== 'KR'"
 				class="logg"
 				:src="`${env.resourcesUrl}/${lang}/img_title_2.png`"
 				mode="widthFix"
 			></image>
+			<image v-if="channel === 'KR'" class="logg" :class="lang+'-kr'" :src="`${env.resourcesUrl}/${lang}/img_title.png`" mode="widthFix"></image>
 			<image v-if="channel === 'CDFG'" @click="goMain()" class="buy" :src="`${env.resourcesUrl}/${lang}/icon_float.buy.png`" mode="widthFix"></image>
 		</view>
 		<view class="page">
@@ -180,7 +182,10 @@ export default {
 		};
 	},
 	onLoad() {
-		
+		uni.showShareMenu({
+		     withShareTicket: true,
+					  menus:['shareAppMessage','shareTimeline']
+		   })
 	},
 	onShow() {
 		entryTime = formatDate(new Date(), "yyyy-MM-dd hh:mm:ss");
@@ -192,6 +197,7 @@ export default {
 			data: {
 				"openid": this.$globalData.openid,
 				"source": this.$globalData.channel,
+				"device": this.$globalData.model,
 				"name": "detail page",
 				"type": "用户停留",
 				"entryTime": entryTime,
@@ -267,7 +273,13 @@ export default {
 		justify-content: space-between;
 		z-index: 1;
 		.logg {
-			width: 80vw;
+			width: 74vw;
+		}
+		.zh-CN-kr {
+			width: 60vw;
+		}
+		.zh-HK-kr {
+			width: 60vw;
 		}
 		.buy {
 			position: fixed;
@@ -363,7 +375,7 @@ export default {
 				letter-spacing: 0.2rpx;
 				text-align: center;
 				color: #371b00;
-				width: 80%;
+				width: 82%;
 			}
 
 			.side {

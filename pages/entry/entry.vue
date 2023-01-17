@@ -100,6 +100,10 @@ export default {
 		}
 	},
 	onLoad(query) {
+		 uni.showShareMenu({
+		      withShareTicket: true,
+			  menus:['shareAppMessage','shareTimeline']
+		    })
 		this.$globalData.channel = query.channel || 'CDFG';
 		this.$globalData.lang = this.lang;
 		let that = this;
@@ -135,12 +139,19 @@ export default {
 		 	data: {
 		 		"openid": this.$globalData.openid,
 		 		"source": this.$globalData.channel,
+				"device": this.$globalData.model,
 		 		"name": "entry page",
 		 		"type": "用户停留",
 		 		"entryTime": this.entryTime,
 		 		"leaveTime": formatDate(new Date(), 'yyyy-MM-dd hh:mm:ss')
 		 	}
 		 })
+	},
+	onShareAppMessage: function () {
+	    return {
+			title: 'Fresh馥蕾诗',
+			path: 'pages/entry/entry',
+		};
 	},
 	methods: {
 		shouyeGifLoad(e) {

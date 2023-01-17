@@ -150,6 +150,7 @@ export default {
 			data: {
 				"openid": this.$globalData.openid,
 				"source": this.$globalData.channel,
+				"device": this.$globalData.model,
 				"name": "game page",
 				"type": "用户停留",
 				"entryTime": entryTime,
@@ -158,6 +159,10 @@ export default {
 		})
 	},
 	onLoad() {
+		uni.showShareMenu({
+		     withShareTicket: true,
+					  menus:['shareAppMessage','shareTimeline']
+		   })
 		this.lang = this.$globalData.lang;
 		this.again = i18n[this.lang].game.again;
 		this.hechengImg = `${env.resourcesUrl}/${this.lang}/synthesis_a.gif`

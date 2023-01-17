@@ -8,8 +8,9 @@ Vue.prototype.$globalData = {
 	menuRight: 0,
 	menuTop: 0,
 	menuHeight: 0,
-	lang: 'zh-HK',
-	channel: 'SEA'
+	model: '',
+	lang: 'zh-CN',
+	channel: ''
 }
 App.mpType = 'app'
 const app = new Vue({

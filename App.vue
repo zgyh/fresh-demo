@@ -11,6 +11,7 @@ export default {
 		this.$globalData.menuRight = systemInfo.screenWidth - menuButtonInfo.right;
 		this.$globalData.menuTop = menuButtonInfo.top;
 		this.$globalData.menuHeight = menuButtonInfo.height;
+		this.$globalData.model = systemInfo.model;
 	},
 	onShow: function() {
 		console.log("App Show");
