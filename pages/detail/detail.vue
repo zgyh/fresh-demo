@@ -228,7 +228,7 @@ export default {
 				"pages/home/index?weappShareInfo=/tabs/index/productInfo&productId=401293&goodsId=525465",
 				"pages/home/index?weappShareInfo=/tabs/index/productInfo&productId=601460&goodsId=722255",
 				"pages/home/index?weappShareInfo=/tabs/index/productInfo&productId=467991&goodsId=592583",
-				"pages/home/index?weappShareInfo=/tabs/categoryBrand/freshIndex?zmsySubsiteId=1",
+				"pages/home/index?weappShareInfo=/tabs/index/productInfo&productId=690223&goodsId=784792",
 				'pages/home/index?weappShareInfo=/tabs/index/productInfo&productId=288511&goodsId=517824',
 				"pages/home/index?weappShareInfo=/tabs/index/productInfo&productId=287240&goodsId=516996"
 			];
